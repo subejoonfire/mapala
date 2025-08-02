@@ -36,7 +36,7 @@
                                 <div class="text-sm text-gray-600">Divisi Aktif</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-3xl font-bold text-mapala-green-600"><?= $stats['members']['anggota'] ?></div>
+                                <div class="text-3xl font-bold text-mapala-green-600"><?= $stats['members']['approved'] ?></div>
                                 <div class="text-sm text-gray-600">Anggota</div>
                             </div>
                             <div class="text-center">
@@ -229,7 +229,7 @@
             Mari bergabung dengan kami untuk mengembangkan kemampuan outdoor, melestarikan alam, dan membangun persaudaraan yang kuat.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/register" class="bg-white text-mapala-green-600 hover:bg-mapala-green-50 px-8 py-3 rounded-lg font-semibold transition-colors">
+            <a href="/daftar" class="bg-white text-mapala-green-600 hover:bg-mapala-green-50 px-8 py-3 rounded-lg font-semibold transition-colors">
                 Daftar Sekarang
             </a>
             <a href="/contact" class="border-2 border-white text-white hover:bg-white hover:text-mapala-green-600 px-8 py-3 rounded-lg font-semibold transition-colors">
@@ -248,7 +248,7 @@
                 <div class="text-gray-400">Divisi Aktif</div>
             </div>
             <div>
-                <div class="text-4xl font-bold text-mapala-green-400 mb-2"><?= $stats['members']['anggota'] ?></div>
+                <div class="text-4xl font-bold text-mapala-green-400 mb-2"><?= $stats['members']['approved'] ?></div>
                 <div class="text-gray-400">Anggota Aktif</div>
             </div>
             <div>
