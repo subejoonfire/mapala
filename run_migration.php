@@ -30,7 +30,7 @@ try {
 
 // Buat database jika belum ada
 try {
-    $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$database}`");
     echo "✅ Database '{$database}' created/verified\n";
 } catch (PDOException $e) {
     echo "❌ Failed to create database: " . $e->getMessage() . "\n";
