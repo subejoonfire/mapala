@@ -12,7 +12,7 @@ class Users extends BaseController
         $userModel = new UserModel();
         
         $data = [
-            'title' => 'Manajemen User',
+            'title' => 'Manajemen Pendaftar',
             'users' => $userModel->findAll(),
         ];
         
@@ -22,7 +22,7 @@ class Users extends BaseController
     public function create()
     {
         $data = [
-            'title' => 'Tambah User',
+            'title' => 'Tambah Pendaftar',
         ];
         
         return view('admin/users/create', $data);
@@ -36,14 +36,23 @@ class Users extends BaseController
             'nim' => $this->request->getPost('nim'),
             'nama_lengkap' => $this->request->getPost('nama_lengkap'),
             'email' => $this->request->getPost('email'),
-            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            'role' => $this->request->getPost('role'),
+            'no_wa' => $this->request->getPost('no_wa'),
+            'no_hp' => $this->request->getPost('no_hp'),
+            'tempat_lahir' => $this->request->getPost('tempat_lahir'),
+            'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
+            'tempat_tinggal' => $this->request->getPost('tempat_tinggal'),
+            'program_studi' => $this->request->getPost('program_studi'),
+            'agama' => $this->request->getPost('agama'),
+            'penyakit' => $this->request->getPost('penyakit'),
+            'pengalaman_organisasi' => $this->request->getPost('pengalaman_organisasi'),
+            'alasan_mapala' => $this->request->getPost('alasan_mapala'),
             'status' => $this->request->getPost('status'),
+            'angkatan' => date('Y')
         ];
         
         $userModel->insert($data);
         
-        return redirect()->to('/admin/users')->with('success', 'User berhasil ditambahkan.');
+        return redirect()->to('/admin/users')->with('success', 'Pendaftar berhasil ditambahkan.');
     }
     
     public function edit($id)
@@ -56,7 +65,7 @@ class Users extends BaseController
         }
         
         $data = [
-            'title' => 'Edit User',
+            'title' => 'Edit Pendaftar',
             'user' => $user,
         ];
         
@@ -70,17 +79,22 @@ class Users extends BaseController
         $data = [
             'nama_lengkap' => $this->request->getPost('nama_lengkap'),
             'email' => $this->request->getPost('email'),
-            'role' => $this->request->getPost('role'),
+            'no_wa' => $this->request->getPost('no_wa'),
+            'no_hp' => $this->request->getPost('no_hp'),
+            'tempat_lahir' => $this->request->getPost('tempat_lahir'),
+            'tanggal_lahir' => $this->request->getPost('tanggal_lahir'),
+            'tempat_tinggal' => $this->request->getPost('tempat_tinggal'),
+            'program_studi' => $this->request->getPost('program_studi'),
+            'agama' => $this->request->getPost('agama'),
+            'penyakit' => $this->request->getPost('penyakit'),
+            'pengalaman_organisasi' => $this->request->getPost('pengalaman_organisasi'),
+            'alasan_mapala' => $this->request->getPost('alasan_mapala'),
             'status' => $this->request->getPost('status'),
         ];
         
-        if ($this->request->getPost('password')) {
-            $data['password'] = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
-        }
-        
         $userModel->update($id, $data);
         
-        return redirect()->to('/admin/users')->with('success', 'User berhasil diperbarui.');
+        return redirect()->to('/admin/users')->with('success', 'Pendaftar berhasil diperbarui.');
     }
     
     public function delete($id)
@@ -88,7 +102,7 @@ class Users extends BaseController
         $userModel = new UserModel();
         $userModel->delete($id);
         
-        return redirect()->to('/admin/users')->with('success', 'User berhasil dihapus.');
+        return redirect()->to('/admin/users')->with('success', 'Pendaftar berhasil dihapus.');
     }
     
     public function approve($id)
@@ -96,7 +110,7 @@ class Users extends BaseController
         $userModel = new UserModel();
         $userModel->update($id, ['status' => 'approved']);
         
-        return redirect()->to('/admin/users')->with('success', 'User berhasil disetujui.');
+        return redirect()->to('/admin/users')->with('success', 'Pendaftar berhasil disetujui.');
     }
     
     public function reject($id)
@@ -104,6 +118,6 @@ class Users extends BaseController
         $userModel = new UserModel();
         $userModel->update($id, ['status' => 'rejected']);
         
-        return redirect()->to('/admin/users')->with('success', 'User berhasil ditolak.');
+        return redirect()->to('/admin/users')->with('success', 'Pendaftar berhasil ditolak.');
     }
 }

@@ -1,68 +1,116 @@
-# CodeIgniter 4 Application Starter
+# MAPALA Politala - Sistem Pendaftaran
 
-## What is CodeIgniter?
+Sistem pendaftaran MAPALA Politala dengan konsep free registration untuk semua user dan login hanya untuk admin.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## 🚀 Fitur Utama
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+- ✅ **Free Registration** - Semua user bisa daftar tanpa login
+- ✅ **Admin Only Login** - Hanya admin yang bisa login
+- ✅ **PDF Generation** - Otomatis generate formulir & ID Card
+- ✅ **WhatsApp Integration** - Link grup WhatsApp
+- ✅ **Admin Panel** - Verifikasi pendaftar dan manajemen data
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## 📋 Cara Setup
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+### 1. Install Dependencies
+```bash
+composer install
+```
 
-## Installation & updates
+### 2. Setup Database
+```bash
+php setup_mapala_new.php
+```
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+### 3. Jalankan Aplikasi
+```bash
+php spark serve
+```
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+## 🔐 Login Admin
 
-## Setup
+### Default Admin Accounts:
+- **Username**: `admin`
+- **Password**: `admin123`
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+- **Username**: `ketua`
+- **Password**: `ketua123`
 
-## Important Change with index.php
+## 🔗 URL Penting
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+- **Beranda**: `http://localhost:8080`
+- **Daftar MAPALA**: `http://localhost:8080/daftar`
+- **Login Admin**: `http://localhost:8080/login`
+- **Admin Dashboard**: `http://localhost:8080/admin`
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+## 📄 Output untuk User
 
-**Please** read the user guide for a better explanation of how CI4 works!
+Setelah admin approve, user akan mendapat:
+- **Formulir Pendaftaran PDF**
+- **ID Card MAPALA PDF**
+- **Link Grup WhatsApp**
 
-## Repository Management
+## 🛠️ Admin Panel Features
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+- ✅ Verifikasi pendaftar (approve/reject)
+- ✅ Generate PDF formulir & ID Card
+- ✅ Manajemen user
+- ✅ Reports & statistik
+- ✅ Export data
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+## 📱 WhatsApp Integration
 
-## Server Requirements
+Link otomatis ke grup WhatsApp:
+```
+https://wa.me/6281234567890?text=Halo, saya ingin bergabung dengan MAPALA Politala
+```
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+## 🔧 Konfigurasi
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+### Environment (.env)
+```env
+database.default.hostname = localhost
+database.default.database = mapala_db
+database.default.username = root
+database.default.password = 
+database.default.DBDriver = MySQLi
+database.default.port = 3306
+```
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+## 📁 Struktur Database
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+### Tabel `users` (Pendaftar)
+- NIM, nama, email, no WA/HP
+- Data pribadi lengkap
+- Foto upload
+- Status (pending/approved/rejected)
+- **Tidak ada password**
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+### Tabel `admins` (Admin)
+- Username & password untuk login
+- Role admin
+- Status aktif/nonaktif
+
+## 🔄 Flow Sistem
+
+1. **User daftar** di `/daftar` (free, tanpa login)
+2. **Admin login** di `/login`
+3. **Admin verifikasi** pendaftar di `/admin/users`
+4. **Admin approve/reject** dan generate PDF
+5. **User mendapat** PDF + link WhatsApp
+
+## 📞 Support
+
+Untuk bantuan teknis:
+- **Email**: admin@mapala-politala.ac.id
+- **WhatsApp**: 081234567890
+
+## 📝 Changelog
+
+### v2.0.0 (Sistem Baru)
+- ✅ Free registration untuk semua user
+- ✅ Login hanya untuk admin
+- ✅ Generate PDF formulir & ID Card
+- ✅ Integrasi WhatsApp grup
+- ✅ Admin panel yang lengkap
+- ✅ Sistem verifikasi pendaftar

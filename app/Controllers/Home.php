@@ -29,7 +29,7 @@ class Home extends BaseController
             'stats' => [
                 'divisi' => $this->divisiModel->getDivisiStats(),
                 'kegiatan' => $this->kegiatanModel->getKegiatanStats(),
-                'members' => $this->userModel->getRegistrationStats()
+                'members' => $this->getUserStats()
             ]
         ];
 
@@ -43,7 +43,7 @@ class Home extends BaseController
             'divisi' => $this->divisiModel->getActiveDivisi(),
             'stats' => [
                 'divisi' => $this->divisiModel->getDivisiStats(),
-                'members' => $this->userModel->getRegistrationStats()
+                'members' => $this->getUserStats()
             ]
         ];
 
@@ -94,5 +94,19 @@ class Home extends BaseController
     {
         $this->response->setContentType('text/plain');
         return view('home/robots');
+    }
+
+    private function getUserStats()
+    {
+        return [
+            'total' => $this->userModel->countAll(),
+            'approved' => $this->userModel->where('status', 'approved')->countAllResults(),
+            'pending' => $this->userModel->where('status', 'pending')->countAllResults(),
+            'rejected' => $this->userModel->where('status', 'rejected')->countAllResults(),
+            'angkatan_2021' => $this->userModel->where('angkatan', 2021)->where('status', 'approved')->countAllResults(),
+            'angkatan_2022' => $this->userModel->where('angkatan', 2022)->where('status', 'approved')->countAllResults(),
+            'angkatan_2023' => $this->userModel->where('angkatan', 2023)->where('status', 'approved')->countAllResults(),
+            'angkatan_2024' => $this->userModel->where('angkatan', 2024)->where('status', 'approved')->countAllResults(),
+        ];
     }
 }
