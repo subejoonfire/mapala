@@ -91,7 +91,14 @@ class Daftar extends BaseController
 
         if ($foto->isValid() && !$foto->hasMoved()) {
             $fotoName = $foto->getRandomName();
-            $foto->move(ROOTPATH . 'public/uploads/fotos', $fotoName);
+            
+            // Ensure upload directory exists
+            $uploadPath = ROOTPATH . 'public/uploads/fotos/';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            
+            $foto->move($uploadPath, $fotoName);
         }
 
         // Prepare user data
@@ -118,30 +125,46 @@ class Daftar extends BaseController
             'angkatan' => date('Y')
         ];
 
+        // Log the data being inserted for debugging
+        log_message('info', 'Attempting to insert user data: ' . json_encode($userData));
+
         // Save user
-        if ($this->userModel->insert($userData)) {
-            $userId = $this->userModel->insertID();
-            
-            // Generate DOCX files
-            $registrationDocxPath = $this->generateRegistrationDOCX($userData);
-            $idCardDocxPath = $this->generateIdCardDOCX($userData);
-            
-            // Get WhatsApp link from settings
-            $whatsappLink = $this->settingModel->getValue('whatsapp_group_link', 'https://chat.whatsapp.com/example');
-            $whatsappName = $this->settingModel->getValue('whatsapp_group_name', 'MAPALA Politala Official');
-            
-            // Store DOCX paths in session for download
-            session()->set([
-                'registration_docx' => $registrationDocxPath,
-                'id_card_docx' => $idCardDocxPath,
-                'whatsapp_link' => $whatsappLink,
-                'whatsapp_name' => $whatsappName,
-                'user_data' => $userData
-            ]);
-            
-            return redirect()->to('/daftar/success')->with('success', 'Pendaftaran berhasil! Silakan download dokumen Anda.');
-        } else {
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar');
+        try {
+            if ($this->userModel->insert($userData)) {
+                $userId = $this->userModel->insertID();
+                
+                // Generate DOCX files
+                $registrationDocxPath = $this->generateRegistrationDOCX($userData);
+                $idCardDocxPath = $this->generateIdCardDOCX($userData);
+                
+                // Get WhatsApp link from settings
+                try {
+                    $whatsappLink = $this->settingModel->getValue('whatsapp_group_link', 'https://chat.whatsapp.com/example');
+                    $whatsappName = $this->settingModel->getValue('whatsapp_group_name', 'MAPALA Politala Official');
+                } catch (\Exception $e) {
+                    log_message('warning', 'Settings table not available, using defaults: ' . $e->getMessage());
+                    $whatsappLink = 'https://chat.whatsapp.com/example';
+                    $whatsappName = 'MAPALA Politala Official';
+                }
+                
+                // Store DOCX paths in session for download
+                session()->set([
+                    'registration_docx' => $registrationDocxPath,
+                    'id_card_docx' => $idCardDocxPath,
+                    'whatsapp_link' => $whatsappLink,
+                    'whatsapp_name' => $whatsappName,
+                    'user_data' => $userData
+                ]);
+                
+                return redirect()->to('/daftar/success')->with('success', 'Pendaftaran berhasil! Silakan download dokumen Anda.');
+            } else {
+                log_message('error', 'Failed to insert user data: ' . json_encode($this->userModel->errors()));
+                return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar: ' . implode(', ', $this->userModel->errors()));
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Exception during user registration: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar: ' . $e->getMessage());
         }
     }
 
@@ -162,133 +185,58 @@ class Daftar extends BaseController
     private function generateRegistrationDOCX($userData)
     {
         try {
-            $phpWord = new PhpWord();
-            $section = $phpWord->addSection();
+            // Use existing template
+            $templatePath = ROOTPATH . 'app/Templates/formulir_pendaftaran_template.docx';
             
-            // Header
-            $headerStyle = ['name' => 'Arial', 'size' => 16, 'bold' => true];
-            $section->addText('FORMULIR PENDAFTARAN MAPALA POLITALA', $headerStyle, ['alignment' => 'center']);
-            $section->addText('Mahasiswa Pecinta Alam Politeknik Negeri Tanah Laut', ['name' => 'Arial', 'size' => 12], ['alignment' => 'center']);
-            $section->addTextBreak(2);
+            if (!file_exists($templatePath)) {
+                log_message('error', 'Template file not found: ' . $templatePath);
+                return null;
+            }
             
-            // Data Pribadi
-            $section->addText('DATA PRIBADI', ['name' => 'Arial', 'size' => 12, 'bold' => true]);
-            $section->addTextBreak();
+            // Load template
+            $templateProcessor = new TemplateProcessor($templatePath);
             
-            $tableStyle = ['borderSize' => 6, 'borderColor' => '999999', 'cellMargin' => 80];
-            $table = $section->addTable($tableStyle);
-            
-            // Add rows
-            $table->addRow();
-            $table->addCell(4000)->addText('Nama Lengkap', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['nama_lengkap']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Nama Panggilan', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['nama_panggilan']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Tempat dan Tanggal Lahir', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['tempat_lahir'] . ', ' . date('d F Y', strtotime($userData['tanggal_lahir'])));
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Jenis Kelamin', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['jenis_kelamin']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Alamat', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['alamat']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('No. Telp/ HP', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['no_telp']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Agama', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['agama']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Prodi / Jurusan', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['program_studi']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Gol. Darah', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['gol_darah']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Penyakit yang diderita', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['penyakit'] ?: 'Tidak ada');
-            
-            $section->addTextBreak(2);
-            
-            // Data Orangtua
-            $section->addText('DATA ORANGTUA', ['name' => 'Arial', 'size' => 12, 'bold' => true]);
-            $section->addTextBreak();
-            
-            $table2 = $section->addTable($tableStyle);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Nama Ayah', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['nama_ayah']);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Nama Ibu', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['nama_ibu']);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Alamat Orangtua', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['alamat_orangtua']);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('No. Telp./ HP Orangtua', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['no_telp_orangtua']);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Pekerjaan Ayah', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['pekerjaan_ayah']);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Pekerjaan Ibu', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['pekerjaan_ibu']);
-            
-            $section->addTextBreak(2);
-            
-            // Footer
-            $section->addText('Dokumen ini dibuat otomatis pada tanggal ' . date('d F Y'), ['name' => 'Arial', 'size' => 10], ['alignment' => 'center']);
-            $section->addText('Status: PENDING - Menunggu persetujuan admin', ['name' => 'Arial', 'size' => 10], ['alignment' => 'center']);
+            // Replace placeholders with actual data
+            $templateProcessor->setValue('nama_lengkap', $userData['nama_lengkap']);
+            $templateProcessor->setValue('nama_panggilan', $userData['nama_panggilan']);
+            $templateProcessor->setValue('tempat_lahir', $userData['tempat_lahir']);
+            $templateProcessor->setValue('tanggal_lahir', date('d F Y', strtotime($userData['tanggal_lahir'])));
+            $templateProcessor->setValue('jenis_kelamin', $userData['jenis_kelamin']);
+            $templateProcessor->setValue('alamat', $userData['alamat']);
+            $templateProcessor->setValue('no_telp', $userData['no_telp']);
+            $templateProcessor->setValue('agama', $userData['agama']);
+            $templateProcessor->setValue('program_studi', $userData['program_studi']);
+            $templateProcessor->setValue('gol_darah', $userData['gol_darah']);
+            $templateProcessor->setValue('penyakit', $userData['penyakit'] ?: 'Tidak ada');
+            $templateProcessor->setValue('nama_ayah', $userData['nama_ayah']);
+            $templateProcessor->setValue('nama_ibu', $userData['nama_ibu']);
+            $templateProcessor->setValue('alamat_orangtua', $userData['alamat_orangtua']);
+            $templateProcessor->setValue('no_telp_orangtua', $userData['no_telp_orangtua']);
+            $templateProcessor->setValue('pekerjaan_ayah', $userData['pekerjaan_ayah']);
+            $templateProcessor->setValue('pekerjaan_ibu', $userData['pekerjaan_ibu']);
+            $templateProcessor->setValue('tanggal_dibuat', date('d F Y'));
+            $templateProcessor->setValue('status', 'PENDING - Menunggu persetujuan admin');
             
             // Save the generated document
             $filename = 'formulir_pendaftaran_' . preg_replace('/[^a-zA-Z0-9]/', '_', $userData['nama_lengkap']) . '_' . date('Y-m-d_H-i-s') . '.docx';
             $filepath = ROOTPATH . 'public/uploads/documents/' . $filename;
             
             // Ensure directory exists
-            if (!is_dir(dirname($filepath))) {
-                mkdir(dirname($filepath), 0755, true);
+            $uploadDir = dirname($filepath);
+            if (!is_dir($uploadDir)) {
+                if (!mkdir($uploadDir, 0755, true)) {
+                    log_message('error', 'Failed to create directory: ' . $uploadDir);
+                    return null;
+                }
             }
             
-            $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
-            $objWriter->save($filepath);
+            $templateProcessor->saveAs($filepath);
             
             return $filename;
             
         } catch (\Exception $e) {
             log_message('error', 'Error generating registration DOCX: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             return null;
         }
     }
@@ -296,50 +244,59 @@ class Daftar extends BaseController
     private function generateIdCardDOCX($userData)
     {
         try {
-            $phpWord = new PhpWord();
-            $section = $phpWord->addSection(['marginLeft' => 1000, 'marginRight' => 1000, 'marginTop' => 1000, 'marginBottom' => 1000]);
+            // Use existing template
+            $templatePath = ROOTPATH . 'app/Templates/id_card_template.docx';
             
-            // Header
-            $headerStyle = ['name' => 'Arial', 'size' => 18, 'bold' => true, 'color' => '16a34a'];
-            $section->addText('MAPALA POLITALA', $headerStyle, ['alignment' => 'center']);
-            $section->addText('Mahasiswa Pecinta Alam', ['name' => 'Arial', 'size' => 12], ['alignment' => 'center']);
-            $section->addText('Politeknik Negeri Tanah Laut', ['name' => 'Arial', 'size' => 12], ['alignment' => 'center']);
-            $section->addTextBreak(2);
+            if (!file_exists($templatePath)) {
+                log_message('error', 'Template file not found: ' . $templatePath);
+                return null;
+            }
             
-            // ID Card Content
-            $tableStyle = ['borderSize' => 6, 'borderColor' => '16a34a', 'cellMargin' => 80];
-            $table = $section->addTable($tableStyle);
+            // Load template
+            $templateProcessor = new TemplateProcessor($templatePath);
             
-            $table->addRow();
-            $table->addCell(3000)->addText('FOTO', ['name' => 'Arial', 'size' => 12, 'color' => '999999'], ['alignment' => 'center']);
-            $cell = $table->addCell(5000);
-            $cell->addText('Nama: ' . $userData['nama_lengkap'], ['name' => 'Arial', 'size' => 10, 'bold' => true]);
-            $cell->addText('Program Studi: ' . $userData['program_studi'], ['name' => 'Arial', 'size' => 10]);
-            $cell->addText('Angkatan: ' . $userData['angkatan'], ['name' => 'Arial', 'size' => 10]);
-            $cell->addText('Status: CALON ANGGOTA', ['name' => 'Arial', 'size' => 10, 'bold' => true]);
-            
-            $section->addTextBreak(2);
-            
-            // Footer
-            $section->addText('ID Card ini berlaku sampai persetujuan admin', ['name' => 'Arial', 'size' => 8], ['alignment' => 'center']);
-            $section->addText('Diterbitkan pada: ' . date('d F Y'), ['name' => 'Arial', 'size' => 8], ['alignment' => 'center']);
+            // Replace placeholders with actual data
+            $templateProcessor->setValue('nama_lengkap', $userData['nama_lengkap']);
+            $templateProcessor->setValue('nama_panggilan', $userData['nama_panggilan']);
+            $templateProcessor->setValue('program_studi', $userData['program_studi']);
+            $templateProcessor->setValue('angkatan', $userData['angkatan']);
+            $templateProcessor->setValue('jenis_kelamin', $userData['jenis_kelamin']);
+            $templateProcessor->setValue('tempat_lahir', $userData['tempat_lahir']);
+            $templateProcessor->setValue('tanggal_lahir', date('d F Y', strtotime($userData['tanggal_lahir'])));
+            $templateProcessor->setValue('alamat', $userData['alamat']);
+            $templateProcessor->setValue('no_telp', $userData['no_telp']);
+            $templateProcessor->setValue('agama', $userData['agama']);
+            $templateProcessor->setValue('gol_darah', $userData['gol_darah']);
+            $templateProcessor->setValue('penyakit', $userData['penyakit'] ?: 'Tidak ada');
+            $templateProcessor->setValue('nama_ayah', $userData['nama_ayah']);
+            $templateProcessor->setValue('nama_ibu', $userData['nama_ibu']);
+            $templateProcessor->setValue('alamat_orangtua', $userData['alamat_orangtua']);
+            $templateProcessor->setValue('no_telp_orangtua', $userData['no_telp_orangtua']);
+            $templateProcessor->setValue('pekerjaan_ayah', $userData['pekerjaan_ayah']);
+            $templateProcessor->setValue('pekerjaan_ibu', $userData['pekerjaan_ibu']);
+            $templateProcessor->setValue('tanggal_dibuat', date('d F Y'));
+            $templateProcessor->setValue('status', 'CALON ANGGOTA');
             
             // Save the generated document
             $filename = 'id_card_' . preg_replace('/[^a-zA-Z0-9]/', '_', $userData['nama_lengkap']) . '_' . date('Y-m-d_H-i-s') . '.docx';
             $filepath = ROOTPATH . 'public/uploads/documents/' . $filename;
             
             // Ensure directory exists
-            if (!is_dir(dirname($filepath))) {
-                mkdir(dirname($filepath), 0755, true);
+            $uploadDir = dirname($filepath);
+            if (!is_dir($uploadDir)) {
+                if (!mkdir($uploadDir, 0755, true)) {
+                    log_message('error', 'Failed to create directory: ' . $uploadDir);
+                    return null;
+                }
             }
             
-            $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
-            $objWriter->save($filepath);
+            $templateProcessor->saveAs($filepath);
             
             return $filename;
             
         } catch (\Exception $e) {
             log_message('error', 'Error generating ID Card DOCX: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             return null;
         }
     }
