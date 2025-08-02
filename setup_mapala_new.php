@@ -6,14 +6,14 @@ echo "🚀 Setup Database MAPALA Politala (Sistem Baru)\n";
 echo "==============================================\n\n";
 
 // Konfigurasi database
-$host = 'localhost';
+$host = '127.0.0.1';
 $username = 'root';
 $password = '';
 $database = 'mapala_db';
 
 try {
     // Koneksi ke MySQL
-    $pdo = new PDO("mysql:host=$host", $username, $password);
+    $pdo = new PDO("mysql:host=$host;port=3306", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     echo "✅ Berhasil terhubung ke MySQL\n";
     
@@ -27,7 +27,20 @@ try {
     
 } catch (PDOException $e) {
     echo "❌ Error koneksi database: " . $e->getMessage() . "\n";
-    exit(1);
+    echo "💡 Mencoba membuat database secara manual...\n";
+    
+    // Try to create database manually
+    try {
+        $pdo = new PDO("mysql:host=$host;port=3306", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->exec("CREATE DATABASE IF NOT EXISTS `$database` CHARACTER SET utf8 COLLATE utf8_general_ci");
+        $pdo->exec("USE `$database`");
+        echo "✅ Database berhasil dibuat secara manual\n";
+    } catch (PDOException $e2) {
+        echo "❌ Gagal membuat database: " . $e2->getMessage() . "\n";
+        echo "💡 Pastikan MySQL berjalan dan dapat diakses\n";
+        exit(1);
+    }
 }
 
 // Jalankan migration

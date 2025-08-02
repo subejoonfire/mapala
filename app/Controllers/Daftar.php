@@ -45,9 +45,19 @@ class Daftar extends BaseController
         $foto = $this->request->getFile('foto');
         $fotoName = null;
 
-        if ($foto->isValid() && !$foto->hasMoved()) {
-            $fotoName = $foto->getRandomName();
-            $foto->move(ROOTPATH . 'public/uploads/fotos', $fotoName);
+        if ($foto && $foto->isValid() && !$foto->hasMoved()) {
+            try {
+                // Ensure upload directory exists
+                $uploadPath = ROOTPATH . 'public/uploads/fotos';
+                if (!is_dir($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+                
+                $fotoName = $foto->getRandomName();
+                $foto->move($uploadPath, $fotoName);
+            } catch (\Exception $e) {
+                return redirect()->back()->withInput()->with('error', 'Gagal mengupload foto: ' . $e->getMessage());
+            }
         }
 
         // Prepare user data
@@ -71,13 +81,17 @@ class Daftar extends BaseController
         ];
 
         // Save user
-        if ($this->userModel->insert($userData)) {
-            // Generate PDF
-            $this->generateRegistrationPDF($userData);
-            
-            return redirect()->to('/daftar/success')->with('success', 'Pendaftaran berhasil! Silakan cek email Anda untuk informasi selanjutnya.');
-        } else {
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar');
+        try {
+            if ($this->userModel->insert($userData)) {
+                // Generate PDF
+                $this->generateRegistrationPDF($userData);
+                
+                return redirect()->to('/daftar/success')->with('success', 'Pendaftaran berhasil! Silakan cek email Anda untuk informasi selanjutnya.');
+            } else {
+                return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar');
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
