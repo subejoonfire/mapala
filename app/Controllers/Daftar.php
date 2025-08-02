@@ -76,8 +76,7 @@ class Daftar extends BaseController
             'nama_ibu' => 'required|min_length[3]|max_length[100]',
             'alamat_orangtua' => 'required|min_length[10]',
             'no_telp_orangtua' => 'required|min_length[10]|max_length[20]',
-            'pekerjaan_ayah' => 'required|min_length[3]|max_length[100]',
-            'pekerjaan_ibu' => 'required|min_length[3]|max_length[100]',
+            'pekerjaan_orangtua' => 'required|min_length[3]|max_length[200]',
             'foto' => 'uploaded[foto]|max_size[foto,2048]|is_image[foto]|mime_in[foto,image/jpg,image/jpeg,image/png]'
         ];
 
@@ -111,8 +110,7 @@ class Daftar extends BaseController
             'nama_ibu' => $this->request->getPost('nama_ibu'),
             'alamat_orangtua' => $this->request->getPost('alamat_orangtua'),
             'no_telp_orangtua' => $this->request->getPost('no_telp_orangtua'),
-            'pekerjaan_ayah' => $this->request->getPost('pekerjaan_ayah'),
-            'pekerjaan_ibu' => $this->request->getPost('pekerjaan_ibu'),
+            'pekerjaan_orangtua' => $this->request->getPost('pekerjaan_orangtua'),
             'foto' => $fotoName,
             'status' => 'pending',
             'angkatan' => date('Y')
@@ -165,113 +163,169 @@ class Daftar extends BaseController
             $phpWord = new PhpWord();
             $section = $phpWord->addSection();
             
-            // Header
-            $headerStyle = ['name' => 'Arial', 'size' => 16, 'bold' => true];
-            $section->addText('FORMULIR PENDAFTARAN MAPALA POLITALA', $headerStyle, ['alignment' => 'center']);
-            $section->addText('Mahasiswa Pecinta Alam Politeknik Negeri Tanah Laut', ['name' => 'Arial', 'size' => 12], ['alignment' => 'center']);
+            // Header dengan logo (placeholder untuk logo MAPALA)
+            $headerTable = $section->addTable(['borderSize' => 0, 'cellMargin' => 80]);
+            $headerTable->addRow();
+            $headerTable->addCell(2000)->addText('[LOGO MAPALA]', ['name' => 'Arial', 'size' => 10, 'color' => '999999'], ['alignment' => 'center']);
+            $headerCell = $headerTable->addCell(6000);
+            $headerCell->addText('FORMULIR PENDAFTARAN CALON ANGGOTA BARU', ['name' => 'Arial', 'size' => 14, 'bold' => true], ['alignment' => 'center']);
+            $headerCell->addText('MAPALA POLITALA TAHUN ' . date('Y'), ['name' => 'Arial', 'size' => 12, 'bold' => true], ['alignment' => 'center']);
+            $headerTable->addCell(2000)->addText('Pas Foto\n3x4 Warna', ['name' => 'Arial', 'size' => 10, 'color' => '999999'], ['alignment' => 'center']);
+            
             $section->addTextBreak(2);
             
-            // Data Pribadi
-            $section->addText('DATA PRIBADI', ['name' => 'Arial', 'size' => 12, 'bold' => true]);
-            $section->addTextBreak();
-            
-            $tableStyle = ['borderSize' => 6, 'borderColor' => '999999', 'cellMargin' => 80];
+            // Form fields sesuai template DOCX asli
+            $tableStyle = ['borderSize' => 0, 'cellMargin' => 80];
             $table = $section->addTable($tableStyle);
             
-            // Add rows
+            // Nama Lengkap
             $table->addRow();
-            $table->addCell(4000)->addText('Nama Lengkap', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['nama_lengkap']);
+            $table->addCell(3000)->addText('Nama Lengkap', ['name' => 'Arial', 'size' => 11]);
+            $table->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table->addCell(5000)->addText($userData['nama_lengkap'], ['name' => 'Arial', 'size' => 11]);
             
-            $table->addRow();
-            $table->addCell(4000)->addText('Nama Panggilan', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['nama_panggilan']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Tempat dan Tanggal Lahir', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['tempat_lahir'] . ', ' . date('d F Y', strtotime($userData['tanggal_lahir'])));
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Jenis Kelamin', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['jenis_kelamin']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Alamat', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['alamat']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('No. Telp/ HP', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['no_telp']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Agama', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['agama']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Prodi / Jurusan', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['program_studi']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Gol. Darah', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['gol_darah']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Penyakit yang diderita', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['penyakit'] ?: 'Tidak ada');
-            
-            $section->addTextBreak(2);
-            
-            // Data Orangtua
-            $section->addText('DATA ORANGTUA', ['name' => 'Arial', 'size' => 12, 'bold' => true]);
             $section->addTextBreak();
             
+            // Nama Panggilan
             $table2 = $section->addTable($tableStyle);
-            
             $table2->addRow();
-            $table2->addCell(4000)->addText('Nama Ayah', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['nama_ayah']);
+            $table2->addCell(3000)->addText('Nama Panggilan', ['name' => 'Arial', 'size' => 11]);
+            $table2->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table2->addCell(5000)->addText($userData['nama_panggilan'], ['name' => 'Arial', 'size' => 11]);
             
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Nama Ibu', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['nama_ibu']);
+            $section->addTextBreak();
             
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Alamat Orangtua', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['alamat_orangtua']);
+            // Tempat dan Tanggal Lahir
+            $table3 = $section->addTable($tableStyle);
+            $table3->addRow();
+            $table3->addCell(3000)->addText('Tempat dan Tanggal Lahir', ['name' => 'Arial', 'size' => 11]);
+            $table3->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table3->addCell(5000)->addText($userData['tempat_lahir'] . ', ' . date('d F Y', strtotime($userData['tanggal_lahir'])), ['name' => 'Arial', 'size' => 11]);
             
-            $table2->addRow();
-            $table2->addCell(4000)->addText('No. Telp./ HP Orangtua', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['no_telp_orangtua']);
+            $section->addTextBreak();
             
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Pekerjaan Ayah', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['pekerjaan_ayah']);
+            // Jenis Kelamin
+            $table4 = $section->addTable($tableStyle);
+            $table4->addRow();
+            $table4->addCell(3000)->addText('Jenis Kelamin', ['name' => 'Arial', 'size' => 11]);
+            $table4->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table4->addCell(5000)->addText($userData['jenis_kelamin'], ['name' => 'Arial', 'size' => 11]);
             
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Pekerjaan Ibu', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['pekerjaan_ibu']);
+            $section->addTextBreak();
+            
+            // Alamat
+            $table5 = $section->addTable($tableStyle);
+            $table5->addRow();
+            $table5->addCell(3000)->addText('Alamat', ['name' => 'Arial', 'size' => 11]);
+            $table5->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table5->addCell(5000)->addText($userData['alamat'], ['name' => 'Arial', 'size' => 11]);
+            
+            $section->addTextBreak();
+            
+            // No. Telp/ HP
+            $table6 = $section->addTable($tableStyle);
+            $table6->addRow();
+            $table6->addCell(3000)->addText('No. Telp/ HP', ['name' => 'Arial', 'size' => 11]);
+            $table6->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table6->addCell(5000)->addText($userData['no_telp'], ['name' => 'Arial', 'size' => 11]);
+            
+            $section->addTextBreak();
+            
+            // Agama
+            $table7 = $section->addTable($tableStyle);
+            $table7->addRow();
+            $table7->addCell(3000)->addText('Agama', ['name' => 'Arial', 'size' => 11]);
+            $table7->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table7->addCell(5000)->addText($userData['agama'], ['name' => 'Arial', 'size' => 11]);
+            
+            $section->addTextBreak();
+            
+            // Prodi / Jurusan
+            $table8 = $section->addTable($tableStyle);
+            $table8->addRow();
+            $table8->addCell(3000)->addText('Prodi / Jurusan', ['name' => 'Arial', 'size' => 11]);
+            $table8->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table8->addCell(5000)->addText($userData['program_studi'], ['name' => 'Arial', 'size' => 11]);
+            
+            $section->addTextBreak();
+            
+            // Gol. Darah
+            $table9 = $section->addTable($tableStyle);
+            $table9->addRow();
+            $table9->addCell(3000)->addText('Gol. Darah', ['name' => 'Arial', 'size' => 11]);
+            $table9->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table9->addCell(5000)->addText($userData['gol_darah'], ['name' => 'Arial', 'size' => 11]);
+            
+            $section->addTextBreak();
+            
+            // Penyakit yang diderita
+            $table10 = $section->addTable($tableStyle);
+            $table10->addRow();
+            $table10->addCell(3000)->addText('Penyakit yang diderita', ['name' => 'Arial', 'size' => 11]);
+            $table10->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table10->addCell(5000)->addText($userData['penyakit'] ?: '-', ['name' => 'Arial', 'size' => 11]);
             
             $section->addTextBreak(2);
             
-            // Footer
-            $section->addText('Dokumen ini dibuat otomatis pada tanggal ' . date('d F Y'), ['name' => 'Arial', 'size' => 10], ['alignment' => 'center']);
-            $section->addText('Status: PENDING - Menunggu persetujuan admin', ['name' => 'Arial', 'size' => 10], ['alignment' => 'center']);
+            // Nama Orangtua
+            $section->addText('Nama Orangtua', ['name' => 'Arial', 'size' => 11, 'bold' => true]);
+            $section->addTextBreak();
+            
+            // Ayah
+            $table11 = $section->addTable($tableStyle);
+            $table11->addRow();
+            $table11->addCell(3000)->addText('Ayah', ['name' => 'Arial', 'size' => 11]);
+            $table11->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table11->addCell(5000)->addText($userData['nama_ayah'], ['name' => 'Arial', 'size' => 11]);
+            
+            $section->addTextBreak();
+            
+            // Ibu
+            $table12 = $section->addTable($tableStyle);
+            $table12->addRow();
+            $table12->addCell(3000)->addText('Ibu', ['name' => 'Arial', 'size' => 11]);
+            $table12->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table12->addCell(5000)->addText($userData['nama_ibu'], ['name' => 'Arial', 'size' => 11]);
+            
+            $section->addTextBreak();
+            
+            // Alamat Orangtua
+            $table13 = $section->addTable($tableStyle);
+            $table13->addRow();
+            $table13->addCell(3000)->addText('Alamat Orangtua', ['name' => 'Arial', 'size' => 11]);
+            $table13->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table13->addCell(5000)->addText($userData['alamat_orangtua'], ['name' => 'Arial', 'size' => 11]);
+            
+            $section->addTextBreak();
+            
+            // No. Telp./ HP Orangtua
+            $table14 = $section->addTable($tableStyle);
+            $table14->addRow();
+            $table14->addCell(3000)->addText('No. Telp./ HP Orangtua', ['name' => 'Arial', 'size' => 11]);
+            $table14->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table14->addCell(5000)->addText($userData['no_telp_orangtua'], ['name' => 'Arial', 'size' => 11]);
+            
+            $section->addTextBreak();
+            
+            // Pekerjaan Orangtua (sesuai template asli)
+            $table15 = $section->addTable($tableStyle);
+            $table15->addRow();
+            $table15->addCell(3000)->addText('Pekerjaan Orangtua', ['name' => 'Arial', 'size' => 11]);
+            $table15->addCell(200)->addText(':', ['name' => 'Arial', 'size' => 11]);
+            $table15->addCell(5000)->addText($userData['pekerjaan_orangtua'], ['name' => 'Arial', 'size' => 11]);
+            
+            $section->addTextBreak(3);
+            
+            // Footer sesuai template asli
+            $footerTable = $section->addTable(['borderSize' => 0, 'cellMargin' => 80]);
+            $footerTable->addRow();
+            $footerTable->addCell(5000)->addText('');
+            $footerCell = $footerTable->addCell(3000);
+            $footerCell->addText('Pelaihari, ' . date('d F Y'), ['name' => 'Arial', 'size' => 11], ['alignment' => 'center']);
+            $footerCell->addTextBreak();
+            $footerCell->addText('Hormat saya,', ['name' => 'Arial', 'size' => 11], ['alignment' => 'center']);
+            $footerCell->addTextBreak(3);
+            $footerCell->addText('(' . $userData['nama_lengkap'] . ')', ['name' => 'Arial', 'size' => 11], ['alignment' => 'center']);
             
             // Save the generated document
             $filename = 'formulir_pendaftaran_' . preg_replace('/[^a-zA-Z0-9]/', '_', $userData['nama_lengkap']) . '_' . date('Y-m-d_H-i-s') . '.docx';
