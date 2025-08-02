@@ -68,4 +68,38 @@ class UserModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    // Custom methods for statistics
+    public function countAll()
+    {
+        return $this->builder()->countAllResults();
+    }
+
+    public function where($field, $value = null)
+    {
+        return $this->builder()->where($field, $value);
+    }
+
+    public function findAll($limit = null, $start = 0)
+    {
+        if ($limit !== null) {
+            return $this->builder()->limit($limit, $start)->get()->getResultArray();
+        }
+        return $this->builder()->get()->getResultArray();
+    }
+
+    public function getApprovedUsers()
+    {
+        return $this->where('status', 'approved')->findAll();
+    }
+
+    public function getPendingUsers()
+    {
+        return $this->where('status', 'pending')->findAll();
+    }
+
+    public function getUsersByAngkatan($angkatan)
+    {
+        return $this->where('angkatan', $angkatan)->where('status', 'approved')->findAll();
+    }
 }
