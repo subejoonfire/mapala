@@ -22,7 +22,6 @@ class CreateKodeEtik extends Migration
             'slug' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '200',
-                'unique'     => true,
             ],
             'konten' => [
                 'type' => 'LONGTEXT',
