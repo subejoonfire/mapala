@@ -162,6 +162,223 @@ class Daftar extends BaseController
     private function generateRegistrationDOCX($userData)
     {
         try {
+            // Load the actual template
+            $templatePath = ROOTPATH . 'Formulir Pendaftaran Calang.docx';
+            
+            if (!file_exists($templatePath)) {
+                // Fallback: create simple document if template not found
+                return $this->generateSimpleRegistrationDOCX($userData);
+            }
+
+            $templateProcessor = new TemplateProcessor($templatePath);
+            
+            // Replace placeholders with actual data
+            // Common placeholder patterns: ${field_name} or {field_name}
+            $templateProcessor->setValue('nama_lengkap', $userData['nama_lengkap']);
+            $templateProcessor->setValue('nama_panggilan', $userData['nama_panggilan']);
+            $templateProcessor->setValue('tempat_lahir', $userData['tempat_lahir']);
+            $templateProcessor->setValue('tanggal_lahir', date('d F Y', strtotime($userData['tanggal_lahir'])));
+            $templateProcessor->setValue('tempat_tanggal_lahir', $userData['tempat_lahir'] . ', ' . date('d F Y', strtotime($userData['tanggal_lahir'])));
+            $templateProcessor->setValue('jenis_kelamin', $userData['jenis_kelamin']);
+            $templateProcessor->setValue('alamat', $userData['alamat']);
+            $templateProcessor->setValue('no_telp', $userData['no_telp']);
+            $templateProcessor->setValue('no_hp', $userData['no_telp']); // alias
+            $templateProcessor->setValue('agama', $userData['agama']);
+            $templateProcessor->setValue('program_studi', $userData['program_studi']);
+            $templateProcessor->setValue('prodi', $userData['program_studi']); // alias
+            $templateProcessor->setValue('jurusan', $userData['program_studi']); // alias
+            $templateProcessor->setValue('gol_darah', $userData['gol_darah']);
+            $templateProcessor->setValue('golongan_darah', $userData['gol_darah']); // alias
+            $templateProcessor->setValue('penyakit', $userData['penyakit'] ?: 'Tidak ada');
+            $templateProcessor->setValue('penyakit_diderita', $userData['penyakit'] ?: 'Tidak ada');
+            
+            // Data Orangtua
+            $templateProcessor->setValue('nama_ayah', $userData['nama_ayah']);
+            $templateProcessor->setValue('nama_ibu', $userData['nama_ibu']);
+            $templateProcessor->setValue('alamat_orangtua', $userData['alamat_orangtua']);
+            $templateProcessor->setValue('no_telp_orangtua', $userData['no_telp_orangtua']);
+            $templateProcessor->setValue('no_hp_orangtua', $userData['no_telp_orangtua']); // alias
+            $templateProcessor->setValue('pekerjaan_ayah', $userData['pekerjaan_ayah']);
+            $templateProcessor->setValue('pekerjaan_ibu', $userData['pekerjaan_ibu']);
+            
+            // Additional common fields
+            $templateProcessor->setValue('tanggal_daftar', date('d F Y'));
+            $templateProcessor->setValue('tanggal', date('d F Y'));
+            $templateProcessor->setValue('status', 'CALON ANGGOTA');
+            $templateProcessor->setValue('angkatan', $userData['angkatan']);
+            
+            // Try different placeholder formats
+            $placeholders = [
+                'NAMA_LENGKAP', 'NAMA_PANGGILAN', 'TEMPAT_LAHIR', 'TANGGAL_LAHIR',
+                'TEMPAT_TANGGAL_LAHIR', 'JENIS_KELAMIN', 'ALAMAT', 'NO_TELP', 'NO_HP',
+                'AGAMA', 'PROGRAM_STUDI', 'PRODI', 'JURUSAN', 'GOL_DARAH', 'GOLONGAN_DARAH',
+                'PENYAKIT', 'PENYAKIT_DIDERITA', 'NAMA_AYAH', 'NAMA_IBU', 'ALAMAT_ORANGTUA',
+                'NO_TELP_ORANGTUA', 'NO_HP_ORANGTUA', 'PEKERJAAN_AYAH', 'PEKERJAAN_IBU',
+                'TANGGAL_DAFTAR', 'TANGGAL', 'STATUS', 'ANGKATAN'
+            ];
+            
+            // Try uppercase versions
+            foreach ($placeholders as $placeholder) {
+                $value = '';
+                switch($placeholder) {
+                    case 'NAMA_LENGKAP':
+                        $value = $userData['nama_lengkap'];
+                        break;
+                    case 'NAMA_PANGGILAN':
+                        $value = $userData['nama_panggilan'];
+                        break;
+                    case 'TEMPAT_LAHIR':
+                        $value = $userData['tempat_lahir'];
+                        break;
+                    case 'TANGGAL_LAHIR':
+                        $value = date('d F Y', strtotime($userData['tanggal_lahir']));
+                        break;
+                    case 'TEMPAT_TANGGAL_LAHIR':
+                        $value = $userData['tempat_lahir'] . ', ' . date('d F Y', strtotime($userData['tanggal_lahir']));
+                        break;
+                    case 'JENIS_KELAMIN':
+                        $value = $userData['jenis_kelamin'];
+                        break;
+                    case 'ALAMAT':
+                        $value = $userData['alamat'];
+                        break;
+                    case 'NO_TELP':
+                    case 'NO_HP':
+                        $value = $userData['no_telp'];
+                        break;
+                    case 'AGAMA':
+                        $value = $userData['agama'];
+                        break;
+                    case 'PROGRAM_STUDI':
+                    case 'PRODI':
+                    case 'JURUSAN':
+                        $value = $userData['program_studi'];
+                        break;
+                    case 'GOL_DARAH':
+                    case 'GOLONGAN_DARAH':
+                        $value = $userData['gol_darah'];
+                        break;
+                    case 'PENYAKIT':
+                    case 'PENYAKIT_DIDERITA':
+                        $value = $userData['penyakit'] ?: 'Tidak ada';
+                        break;
+                    case 'NAMA_AYAH':
+                        $value = $userData['nama_ayah'];
+                        break;
+                    case 'NAMA_IBU':
+                        $value = $userData['nama_ibu'];
+                        break;
+                    case 'ALAMAT_ORANGTUA':
+                        $value = $userData['alamat_orangtua'];
+                        break;
+                    case 'NO_TELP_ORANGTUA':
+                    case 'NO_HP_ORANGTUA':
+                        $value = $userData['no_telp_orangtua'];
+                        break;
+                    case 'PEKERJAAN_AYAH':
+                        $value = $userData['pekerjaan_ayah'];
+                        break;
+                    case 'PEKERJAAN_IBU':
+                        $value = $userData['pekerjaan_ibu'];
+                        break;
+                    case 'TANGGAL_DAFTAR':
+                    case 'TANGGAL':
+                        $value = date('d F Y');
+                        break;
+                    case 'STATUS':
+                        $value = 'CALON ANGGOTA';
+                        break;
+                    case 'ANGKATAN':
+                        $value = $userData['angkatan'];
+                        break;
+                }
+                
+                try {
+                    $templateProcessor->setValue($placeholder, $value);
+                } catch (\Exception $e) {
+                    // Ignore if placeholder doesn't exist
+                }
+            }
+            
+            // Save the generated document
+            $filename = 'formulir_pendaftaran_' . preg_replace('/[^a-zA-Z0-9]/', '_', $userData['nama_lengkap']) . '_' . date('Y-m-d_H-i-s') . '.docx';
+            $filepath = ROOTPATH . 'public/uploads/documents/' . $filename;
+            
+            // Ensure directory exists
+            if (!is_dir(dirname($filepath))) {
+                mkdir(dirname($filepath), 0755, true);
+            }
+            
+            $templateProcessor->saveAs($filepath);
+            
+            return $filename;
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Error generating registration DOCX: ' . $e->getMessage());
+            // Fallback to simple document
+            return $this->generateSimpleRegistrationDOCX($userData);
+        }
+    }
+
+    private function generateIdCardDOCX($userData)
+    {
+        try {
+            // Load the actual template
+            $templatePath = ROOTPATH . 'ID CARD.docx';
+            
+            if (!file_exists($templatePath)) {
+                // Fallback: create simple document if template not found
+                return $this->generateSimpleIdCardDOCX($userData);
+            }
+
+            $templateProcessor = new TemplateProcessor($templatePath);
+            
+            // Replace placeholders with actual data
+            $templateProcessor->setValue('nama_lengkap', $userData['nama_lengkap']);
+            $templateProcessor->setValue('nama', $userData['nama_lengkap']); // alias
+            $templateProcessor->setValue('program_studi', $userData['program_studi']);
+            $templateProcessor->setValue('prodi', $userData['program_studi']); // alias
+            $templateProcessor->setValue('jurusan', $userData['program_studi']); // alias
+            $templateProcessor->setValue('angkatan', $userData['angkatan']);
+            $templateProcessor->setValue('status', 'CALON ANGGOTA');
+            $templateProcessor->setValue('tanggal_berlaku', date('d F Y'));
+            $templateProcessor->setValue('tanggal', date('d F Y'));
+            
+            // Try uppercase versions
+            $templateProcessor->setValue('NAMA_LENGKAP', $userData['nama_lengkap']);
+            $templateProcessor->setValue('NAMA', $userData['nama_lengkap']);
+            $templateProcessor->setValue('PROGRAM_STUDI', $userData['program_studi']);
+            $templateProcessor->setValue('PRODI', $userData['program_studi']);
+            $templateProcessor->setValue('JURUSAN', $userData['program_studi']);
+            $templateProcessor->setValue('ANGKATAN', $userData['angkatan']);
+            $templateProcessor->setValue('STATUS', 'CALON ANGGOTA');
+            $templateProcessor->setValue('TANGGAL_BERLAKU', date('d F Y'));
+            $templateProcessor->setValue('TANGGAL', date('d F Y'));
+            
+            // Save the generated document
+            $filename = 'id_card_' . preg_replace('/[^a-zA-Z0-9]/', '_', $userData['nama_lengkap']) . '_' . date('Y-m-d_H-i-s') . '.docx';
+            $filepath = ROOTPATH . 'public/uploads/documents/' . $filename;
+            
+            // Ensure directory exists
+            if (!is_dir(dirname($filepath))) {
+                mkdir(dirname($filepath), 0755, true);
+            }
+            
+            $templateProcessor->saveAs($filepath);
+            
+            return $filename;
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Error generating ID Card DOCX: ' . $e->getMessage());
+            // Fallback to simple document
+            return $this->generateSimpleIdCardDOCX($userData);
+        }
+    }
+
+    // Fallback methods for simple document generation
+    private function generateSimpleRegistrationDOCX($userData)
+    {
+        try {
             $phpWord = new PhpWord();
             $section = $phpWord->addSection();
             
@@ -288,12 +505,12 @@ class Daftar extends BaseController
             return $filename;
             
         } catch (\Exception $e) {
-            log_message('error', 'Error generating registration DOCX: ' . $e->getMessage());
+            log_message('error', 'Error generating simple registration DOCX: ' . $e->getMessage());
             return null;
         }
     }
 
-    private function generateIdCardDOCX($userData)
+    private function generateSimpleIdCardDOCX($userData)
     {
         try {
             $phpWord = new PhpWord();
@@ -339,7 +556,7 @@ class Daftar extends BaseController
             return $filename;
             
         } catch (\Exception $e) {
-            log_message('error', 'Error generating ID Card DOCX: ' . $e->getMessage());
+            log_message('error', 'Error generating simple ID Card DOCX: ' . $e->getMessage());
             return null;
         }
     }
