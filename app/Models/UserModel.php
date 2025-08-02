@@ -68,4 +68,50 @@ class UserModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    // Custom methods
+    public function getApprovedMembers()
+    {
+        return $this->where('status', 'approved')->findAll();
+    }
+
+    public function getPendingRegistrations()
+    {
+        return $this->where('status', 'pending')->findAll();
+    }
+
+    public function updateStatus($id, $status)
+    {
+        return $this->update($id, ['status' => $status]);
+    }
+
+    public function getByAngkatan($angkatan)
+    {
+        return $this->where('angkatan', $angkatan)
+                   ->where('status', 'approved')
+                   ->findAll();
+    }
+
+    public function searchMembers($keyword)
+    {
+        return $this->like('nama_lengkap', $keyword)
+                   ->orLike('nim', $keyword)
+                   ->orLike('email', $keyword)
+                   ->where('status', 'approved')
+                   ->findAll();
+    }
+
+    public function getRegistrationStats()
+    {
+        return [
+            'total' => $this->countAll(),
+            'approved' => $this->where('status', 'approved')->countAllResults(),
+            'pending' => $this->where('status', 'pending')->countAllResults(),
+            'rejected' => $this->where('status', 'rejected')->countAllResults(),
+            'angkatan_2021' => $this->where('angkatan', 2021)->where('status', 'approved')->countAllResults(),
+            'angkatan_2022' => $this->where('angkatan', 2022)->where('status', 'approved')->countAllResults(),
+            'angkatan_2023' => $this->where('angkatan', 2023)->where('status', 'approved')->countAllResults(),
+            'angkatan_2024' => $this->where('angkatan', 2024)->where('status', 'approved')->countAllResults(),
+        ];
+    }
 }
