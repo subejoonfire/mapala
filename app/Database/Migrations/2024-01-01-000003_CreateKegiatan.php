@@ -44,12 +44,12 @@ class CreateKegiatan extends Migration
                 'null'       => true,
             ],
             'jenis_kegiatan' => [
-                'type'       => 'ENUM',
-                'constraint' => ['pendakian', 'rock_climbing', 'arung_jeram', 'penelitian', 'sar', 'pelatihan', 'lainnya'],
+                'type'       => 'VARCHAR',
+                'constraint' => '50',
             ],
             'status' => [
-                'type'       => 'ENUM',
-                'constraint' => ['draft', 'published', 'completed'],
+                'type'       => 'VARCHAR',
+                'constraint' => '20',
                 'default'    => 'draft',
             ],
             'foto_cover' => [

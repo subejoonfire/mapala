@@ -42,8 +42,8 @@ class CreateVideoAngkatan extends Migration
                 'null'       => true,
             ],
             'status' => [
-                'type'       => 'ENUM',
-                'constraint' => ['draft', 'published'],
+                'type'       => 'VARCHAR',
+                'constraint' => '20',
                 'default'    => 'draft',
             ],
             'created_at' => [

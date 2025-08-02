@@ -76,13 +76,13 @@ class CreateUsers extends Migration
                 'null'       => true,
             ],
             'role' => [
-                'type'       => 'ENUM',
-                'constraint' => ['admin', 'anggota', 'calon_anggota'],
+                'type'       => 'VARCHAR',
+                'constraint' => '20',
                 'default'    => 'calon_anggota',
             ],
             'status' => [
-                'type'       => 'ENUM',
-                'constraint' => ['pending', 'approved', 'rejected'],
+                'type'       => 'VARCHAR',
+                'constraint' => '20',
                 'default'    => 'pending',
             ],
             'angkatan' => [

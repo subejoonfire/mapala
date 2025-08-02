@@ -47,8 +47,8 @@ class CreateDivisi extends Migration
                 'default'    => 0,
             ],
             'status' => [
-                'type'       => 'ENUM',
-                'constraint' => ['aktif', 'nonaktif'],
+                'type'       => 'VARCHAR',
+                'constraint' => '20',
                 'default'    => 'aktif',
             ],
             'created_at' => [

@@ -33,8 +33,8 @@ class CreateKodeEtik extends Migration
                 'default'    => 0,
             ],
             'status' => [
-                'type'       => 'ENUM',
-                'constraint' => ['draft', 'published'],
+                'type'       => 'VARCHAR',
+                'constraint' => '20',
                 'default'    => 'published',
             ],
             'created_at' => [
