@@ -100,7 +100,7 @@
                         </div>
                     <?php else: ?>
                         <a href="/login" class="bg-mapala-green-600 hover:bg-mapala-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">Login</a>
-                        <a href="/register" class="border border-mapala-green-600 text-mapala-green-600 hover:bg-mapala-green-50 px-4 py-2 rounded-md text-sm font-medium transition-colors">Daftar</a>
+                        <a href="/daftar" class="border border-mapala-green-600 text-mapala-green-600 hover:bg-mapala-green-50 px-4 py-2 rounded-md text-sm font-medium transition-colors">Daftar</a>
                     <?php endif; ?>
                 </div>
 
@@ -133,7 +133,7 @@
                 <?php else: ?>
                     <hr class="my-2">
                     <a href="/login" class="block px-3 py-2 bg-mapala-green-600 text-white rounded-md text-base font-medium">Login</a>
-                    <a href="/register" class="block px-3 py-2 border border-mapala-green-600 text-mapala-green-600 rounded-md text-base font-medium mt-2">Daftar</a>
+                    <a href="/daftar" class="block px-3 py-2 border border-mapala-green-600 text-mapala-green-600 rounded-md text-base font-medium mt-2">Daftar</a>
                 <?php endif; ?>
             </div>
         </div>

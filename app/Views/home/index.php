@@ -18,7 +18,7 @@
                     Mengembangkan kemampuan outdoor, melestarikan alam, dan membangun karakter mahasiswa yang tangguh dan bertanggung jawab.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="/register" class="bg-white text-mapala-green-600 hover:bg-mapala-green-50 px-8 py-3 rounded-lg font-semibold text-center transition-colors">
+                    <a href="/daftar" class="bg-white text-mapala-green-600 hover:bg-mapala-green-50 px-8 py-3 rounded-lg font-semibold text-center transition-colors">
                         Daftar Sekarang
                     </a>
                     <a href="/about" class="border-2 border-white text-white hover:bg-white hover:text-mapala-green-600 px-8 py-3 rounded-lg font-semibold text-center transition-colors">
