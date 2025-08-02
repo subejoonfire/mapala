@@ -69,17 +69,11 @@ class UpdateUsersTableWithNewFields extends Migration
                 'null' => false,
                 'after' => 'alamat_orangtua'
             ],
-            'pekerjaan_ayah' => [
+            'pekerjaan_orangtua' => [
                 'type' => 'VARCHAR',
-                'constraint' => 100,
+                'constraint' => 200,
                 'null' => false,
                 'after' => 'no_telp_orangtua'
-            ],
-            'pekerjaan_ibu' => [
-                'type' => 'VARCHAR',
-                'constraint' => 100,
-                'null' => false,
-                'after' => 'pekerjaan_ayah'
             ]
         ];
         
@@ -92,7 +86,7 @@ class UpdateUsersTableWithNewFields extends Migration
         $this->forge->dropColumn('users', [
             'nama_panggilan', 'jenis_kelamin', 'no_telp', 'gol_darah', 
             'nama_ayah', 'nama_ibu', 'alamat_orangtua', 'no_telp_orangtua', 
-            'pekerjaan_ayah', 'pekerjaan_ibu'
+            'pekerjaan_orangtua'
         ]);
         
         // Rename alamat back to tempat_tinggal
