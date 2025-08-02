@@ -45,6 +45,10 @@ $routes->group('admin', ['filter' => 'admin'], function($routes) {
     $routes->get('/', 'Admin\Dashboard::index');
     $routes->get('dashboard', 'Admin\Dashboard::index');
     
+    // Settings Management
+    $routes->get('settings', 'Admin\Settings::index');
+    $routes->post('settings/update', 'Admin\Settings::update');
+    
     // User Management
     $routes->get('users', 'Admin\Users::index');
     $routes->get('users/create', 'Admin\Users::create');
@@ -109,7 +113,7 @@ $routes->group('api', function($routes) {
 });
 
 // Utility Routes
-$routes->get('download/(:segment)', 'Download::index/$1');
+$routes->get('download/pdf/(:segment)', 'Download::index/$1');
 $routes->post('upload', 'Upload::index');
 $routes->get('pdf/registration/(:num)', 'Pdf::registration/$1');
 $routes->get('pdf/id-card/(:num)', 'Pdf::idCard/$1');

@@ -4,14 +4,21 @@ namespace App\Controllers;
 
 class Download extends BaseController
 {
-    public function document($filename)
+    public function index($filename)
     {
-        $filepath = FCPATH . 'uploads/documents/' . $filename;
+        $filepath = ROOTPATH . 'public/uploads/pdfs/' . $filename;
         
         if (!file_exists($filepath)) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+            return redirect()->back()->with('error', 'File tidak ditemukan.');
         }
         
-        return $this->response->download($filepath, $filename);
+        // Set headers for download
+        $this->response->setHeader('Content-Type', 'application/pdf');
+        $this->response->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        $this->response->setHeader('Content-Length', filesize($filepath));
+        
+        // Output file content
+        readfile($filepath);
+        exit;
     }
 }
