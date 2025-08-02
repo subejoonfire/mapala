@@ -1,16 +1,4 @@
 #--------------------------------------------------------------------
-# Example Environment Configuration file
-#
-# This file can be used as a starting point for your own
-# custom .env files, and contains most of the possible settings
-# available in a default install.
-#
-# By default, all of the settings are commented out. If you want
-# to override the setting, you must un-comment it by removing the '#'
-# at the beginning of the line.
-#--------------------------------------------------------------------
-
-#--------------------------------------------------------------------
 # ENVIRONMENT
 #--------------------------------------------------------------------
 
@@ -21,10 +9,6 @@ CI_ENVIRONMENT = development
 #--------------------------------------------------------------------
 
 app.baseURL = 'http://localhost:8080/'
-# If you have trouble with `.`, you could also use `_`.
-# app_baseURL = ''
-# app.forceGlobalSecureRequests = false
-# app.CSPEnabled = false
 
 #--------------------------------------------------------------------
 # DATABASE
@@ -38,32 +22,158 @@ database.default.DBDriver = SQLite3
 database.default.DBPrefix =
 database.default.port = 
 
-# If you use MySQLi as tests, first update the values of Config\Database::$tests.
-# database.tests.hostname = localhost
-# database.tests.database = ci4_test
-# database.tests.username = root
-# database.tests.password = root
-# database.tests.DBDriver = MySQLi
-# database.tests.DBPrefix =
-# database.tests.charset = utf8mb4
-# database.tests.DBCollat = utf8mb4_general_ci
-# database.tests.port = 3306
-
-#--------------------------------------------------------------------
-# ENCRYPTION
-#--------------------------------------------------------------------
-
-# encryption.key =
-
 #--------------------------------------------------------------------
 # SESSION
 #--------------------------------------------------------------------
 
-# session.driver = 'CodeIgniter\Session\Handlers\FileHandler'
-# session.savePath = null
+session.driver = CodeIgniter\Session\Handlers\FileHandler
+session.cookieName = mapala_session
+session.expiration = 7200
+session.savePath = writable/session/
+session.matchIP = false
+session.timeToUpdate = 300
+session.regenerateDestroy = false
+
+#--------------------------------------------------------------------
+# MAPALA POLITALA SPECIFIC CONFIGURATIONS
+#--------------------------------------------------------------------
+
+# WhatsApp Group Link (untuk pendaftaran anggota baru)
+app.whatsappGroupLink = 'https://chat.whatsapp.com/your-group-link-here'
+
+# Email Configuration (untuk notifikasi)
+app.emailFrom = 'noreply@mapala-politala.ac.id'
+app.emailFromName = 'MAPALA Politala'
+app.smtpHost = 'smtp.gmail.com'
+app.smtpPort = 587
+app.smtpUser = 'your-email@gmail.com'
+app.smtpPass = 'your-app-password'
+
+# File Upload Configuration
+app.maxFileSize = 2048
+app.allowedImageTypes = 'jpg,jpeg,png'
+app.allowedDocumentTypes = 'pdf,doc,docx,xls,xlsx'
+
+# PDF Configuration
+app.pdfLogoPath = 'public/assets/images/logo-mapala.png'
+app.pdfHeaderText = 'MAPALA POLITALA'
+app.pdfFooterText = 'Mahasiswa Pecinta Alam Politeknik Negeri Tanah Laut'
+
+# Admin Configuration
+app.adminEmail = 'admin@mapala-politala.ac.id'
+app.adminPhone = '081234567890'
+
+# Security Configuration
+app.sessionTimeout = 7200
+app.maxLoginAttempts = 5
+app.lockoutTime = 900
+
+#--------------------------------------------------------------------
+# CUSTOM MAPALA CONFIGURATIONS
+#--------------------------------------------------------------------
+
+# Divisi Configuration
+app.divisiCount = 5
+app.divisiNames = ['Gunung Hutan', 'Rock Climbing', 'Arung Jeram', 'Penelitian & Lingkungan', 'SAR']
+
+# Program Studi Configuration
+app.programStudi = [
+    'Akuntansi',
+    'Teknologi Informasi', 
+    'Teknologi Otomotif',
+    'Agroindustri',
+    'TPT',
+    'TRKJ',
+    'TRKJJ',
+    'Akuntansi Perpajakan',
+    'PPA',
+    'TRPAB'
+]
+
+# Agama Configuration
+app.religions = [
+    'Islam',
+    'Kristen',
+    'Katolik', 
+    'Hindu',
+    'Buddha',
+    'Konghucu'
+]
+
+# Jenis Kegiatan Configuration
+app.jenisKegiatan = [
+    'pendakian',
+    'rock_climbing',
+    'arung_jeram',
+    'penelitian',
+    'sar',
+    'pelatihan',
+    'lainnya'
+]
+
+#--------------------------------------------------------------------
+# FILE UPLOAD PATHS
+#--------------------------------------------------------------------
+
+uploads.fotos = 'public/uploads/fotos/'
+uploads.documents = 'public/uploads/documents/'
+uploads.idCards = 'public/uploads/id-cards/'
+uploads.temp = 'public/uploads/temp/'
+
+#--------------------------------------------------------------------
+# PDF TEMPLATES
+#--------------------------------------------------------------------
+
+pdf.templates.registration = 'app/Views/pdf/registration.php'
+pdf.templates.idCard = 'app/Views/pdf/id_card.php'
+pdf.outputPath = 'public/downloads/'
+
+#--------------------------------------------------------------------
+# MAPALA Organization Info
+#--------------------------------------------------------------------
+
+app.organizationName = 'MAPALA Politala'
+app.organizationFullName = 'Mahasiswa Pecinta Alam Politeknik Negeri Tanah Laut'
+app.organizationAddress = 'Jl. A. Yani Km 6, Pelaihari, Tanah Laut, Kalimantan Selatan'
+app.organizationPhone = '+62-812-3456-7890'
+app.organizationEmail = 'info@mapala-politala.ac.id'
+app.organizationWebsite = 'https://mapala-politala.ac.id'
+
+# MAPALA Social Media
+app.socialMedia.facebook = 'https://facebook.com/mapala.politala'
+app.socialMedia.instagram = 'https://instagram.com/mapala_politala'
+app.socialMedia.youtube = 'https://youtube.com/@mapalapolitala'
+app.socialMedia.twitter = 'https://twitter.com/mapala_politala'
+
+# MAPALA Bank Account (for donations)
+app.bankAccount.name = 'MAPALA Politala'
+app.bankAccount.number = '1234-5678-9012-3456'
+app.bankAccount.bank = 'Bank BNI'
+app.bankAccount.branch = 'Pelaihari'
+
+#--------------------------------------------------------------------
+# DEVELOPMENT TOOLS
+#--------------------------------------------------------------------
+
+debug.showErrors = true
+debug.showDebugInfo = true
+debug.showQueries = true
+debug.showMemoryUsage = true
 
 #--------------------------------------------------------------------
 # LOGGER
 #--------------------------------------------------------------------
 
-# logger.threshold = 4
+logger.threshold = 4
+
+#--------------------------------------------------------------------
+# MIGRATIONS
+#--------------------------------------------------------------------
+
+migrations.enabled = true
+migrations.table = migrations
+migrations.path = 'App\Database\Migrations'
+
+#--------------------------------------------------------------------
+# END OF CONFIGURATION
+#--------------------------------------------------------------------
