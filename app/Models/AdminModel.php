@@ -4,31 +4,21 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class UserModel extends Model
+class AdminModel extends Model
 {
-    protected $table            = 'users';
+    protected $table            = 'admins';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
 
     protected $allowedFields = [
-        'nim',
+        'username',
+        'password',
         'nama_lengkap',
         'email',
-        'no_wa',
-        'no_hp',
-        'tempat_lahir',
-        'tanggal_lahir',
-        'tempat_tinggal',
-        'program_studi',
-        'agama',
-        'penyakit',
-        'pengalaman_organisasi',
-        'alasan_mapala',
-        'foto',
+        'role',
         'status',
-        'angkatan',
         'created_at',
         'updated_at',
     ];
@@ -42,17 +32,9 @@ class UserModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'nim' => 'required|min_length[8]|max_length[20]|is_unique[users.nim,id,{id}]',
+        'username' => 'required|min_length[3]|max_length[50]|is_unique[admins.username,id,{id}]',
         'nama_lengkap' => 'required|min_length[3]|max_length[100]',
-        'email' => 'required|valid_email|is_unique[users.email,id,{id}]',
-        'no_wa' => 'required|min_length[10]|max_length[20]',
-        'no_hp' => 'required|min_length[10]|max_length[20]',
-        'tempat_lahir' => 'required|min_length[3]|max_length[100]',
-        'tanggal_lahir' => 'required|valid_date',
-        'tempat_tinggal' => 'required|min_length[10]',
-        'program_studi' => 'required|min_length[3]|max_length[50]',
-        'agama' => 'required|min_length[3]|max_length[20]',
-        'alasan_mapala' => 'required|min_length[20]',
+        'email' => 'required|valid_email|is_unique[admins.email,id,{id}]',
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
@@ -60,12 +42,34 @@ class UserModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
+    protected $beforeInsert   = ['hashPassword'];
     protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
+    protected $beforeUpdate   = ['hashPassword'];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    protected function hashPassword(array $data)
+    {
+        if (!isset($data['data']['password'])) return $data;
+
+        $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
+
+        return $data;
+    }
+
+    public function authenticate($username, $password)
+    {
+        $admin = $this->where('username', $username)
+                      ->where('status', 'aktif')
+                      ->first();
+
+        if ($admin && password_verify($password, $admin['password'])) {
+            return $admin;
+        }
+
+        return false;
+    }
 }
