@@ -8,8 +8,17 @@ class UpdateUsersTableWithNewFields extends Migration
 {
     public function up()
     {
-        // Drop old columns that are no longer needed
-        $this->forge->dropColumn('users', ['nim', 'email', 'no_wa', 'no_hp', 'tempat_tinggal', 'pengalaman_organisasi', 'alasan_mapala']);
+        // First, rename tempat_tinggal to alamat
+        $this->forge->modifyColumn('users', [
+            'tempat_tinggal' => [
+                'name' => 'alamat',
+                'type' => 'TEXT',
+                'null' => false
+            ]
+        ]);
+        
+        // Drop old columns that are no longer needed (excluding tempat_tinggal since it's now alamat)
+        $this->forge->dropColumn('users', ['nim', 'email', 'no_wa', 'no_hp', 'pengalaman_organisasi', 'alasan_mapala']);
         
         // Add new columns
         $fields = [
@@ -75,20 +84,27 @@ class UpdateUsersTableWithNewFields extends Migration
         ];
         
         $this->forge->addColumn('users', $fields);
-        
-        // Modify existing columns
-        $this->forge->modifyColumn('users', [
-            'tempat_tinggal' => [
-                'name' => 'alamat',
-                'type' => 'TEXT',
-                'null' => false
-            ]
-        ]);
     }
 
     public function down()
     {
-        // Add back old columns
+        // Drop new columns first
+        $this->forge->dropColumn('users', [
+            'nama_panggilan', 'jenis_kelamin', 'no_telp', 'gol_darah', 
+            'nama_ayah', 'nama_ibu', 'alamat_orangtua', 'no_telp_orangtua', 
+            'pekerjaan_ayah', 'pekerjaan_ibu'
+        ]);
+        
+        // Rename alamat back to tempat_tinggal
+        $this->forge->modifyColumn('users', [
+            'alamat' => [
+                'name' => 'tempat_tinggal',
+                'type' => 'TEXT',
+                'null' => false
+            ]
+        ]);
+        
+        // Add back old columns (excluding tempat_tinggal since it now exists)
         $oldFields = [
             'nim' => [
                 'type' => 'VARCHAR',
@@ -116,11 +132,6 @@ class UpdateUsersTableWithNewFields extends Migration
                 'null' => false,
                 'after' => 'no_wa'
             ],
-            'tempat_tinggal' => [
-                'type' => 'TEXT',
-                'null' => false,
-                'after' => 'tanggal_lahir'
-            ],
             'pengalaman_organisasi' => [
                 'type' => 'TEXT',
                 'null' => true,
@@ -134,21 +145,5 @@ class UpdateUsersTableWithNewFields extends Migration
         ];
         
         $this->forge->addColumn('users', $oldFields);
-        
-        // Drop new columns
-        $this->forge->dropColumn('users', [
-            'nama_panggilan', 'jenis_kelamin', 'no_telp', 'gol_darah', 
-            'nama_ayah', 'nama_ibu', 'alamat_orangtua', 'no_telp_orangtua', 
-            'pekerjaan_ayah', 'pekerjaan_ibu'
-        ]);
-        
-        // Modify alamat back to tempat_tinggal
-        $this->forge->modifyColumn('users', [
-            'alamat' => [
-                'name' => 'tempat_tinggal',
-                'type' => 'TEXT',
-                'null' => false
-            ]
-        ]);
     }
 }
