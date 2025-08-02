@@ -13,19 +13,23 @@ class UserModel extends Model
     protected $useSoftDeletes   = false;
 
     protected $allowedFields = [
-        'nim',
         'nama_lengkap',
-        'email',
-        'no_wa',
-        'no_hp',
+        'nama_panggilan',
         'tempat_lahir',
         'tanggal_lahir',
-        'tempat_tinggal',
-        'program_studi',
+        'jenis_kelamin',
+        'alamat',
+        'no_telp',
         'agama',
+        'program_studi',
+        'gol_darah',
         'penyakit',
-        'pengalaman_organisasi',
-        'alasan_mapala',
+        'nama_ayah',
+        'nama_ibu',
+        'alamat_orangtua',
+        'no_telp_orangtua',
+        'pekerjaan_ayah',
+        'pekerjaan_ibu',
         'foto',
         'status',
         'angkatan',
@@ -42,17 +46,22 @@ class UserModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'nim' => 'required|min_length[8]|max_length[20]|is_unique[users.nim,id,{id}]',
         'nama_lengkap' => 'required|min_length[3]|max_length[100]',
-        'email' => 'required|valid_email|is_unique[users.email,id,{id}]',
-        'no_wa' => 'required|min_length[10]|max_length[20]',
-        'no_hp' => 'required|min_length[10]|max_length[20]',
+        'nama_panggilan' => 'required|min_length[2]|max_length[50]',
         'tempat_lahir' => 'required|min_length[3]|max_length[100]',
         'tanggal_lahir' => 'required|valid_date',
-        'tempat_tinggal' => 'required|min_length[10]',
-        'program_studi' => 'required|min_length[3]|max_length[50]',
+        'jenis_kelamin' => 'required|in_list[Laki-laki,Perempuan]',
+        'alamat' => 'required|min_length[10]',
+        'no_telp' => 'required|min_length[10]|max_length[20]',
         'agama' => 'required|min_length[3]|max_length[20]',
-        'alasan_mapala' => 'required|min_length[20]',
+        'program_studi' => 'required|min_length[3]|max_length[50]',
+        'gol_darah' => 'required|in_list[A,B,AB,O]',
+        'nama_ayah' => 'required|min_length[3]|max_length[100]',
+        'nama_ibu' => 'required|min_length[3]|max_length[100]',
+        'alamat_orangtua' => 'required|min_length[10]',
+        'no_telp_orangtua' => 'required|min_length[10]|max_length[20]',
+        'pekerjaan_ayah' => 'required|min_length[3]|max_length[100]',
+        'pekerjaan_ibu' => 'required|min_length[3]|max_length[100]',
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
@@ -95,8 +104,8 @@ class UserModel extends Model
     public function searchMembers($keyword)
     {
         return $this->like('nama_lengkap', $keyword)
-                   ->orLike('nim', $keyword)
-                   ->orLike('email', $keyword)
+                   ->orLike('nama_panggilan', $keyword)
+                   ->orLike('program_studi', $keyword)
                    ->where('status', 'approved')
                    ->findAll();
     }

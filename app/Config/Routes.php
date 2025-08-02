@@ -34,6 +34,7 @@ $routes->group('video-angkatan', ['filter' => 'auth'], function($routes) {
 $routes->get('/daftar', 'Daftar::index');
 $routes->post('/daftar', 'Daftar::store');
 $routes->get('/daftar/success', 'Daftar::success');
+$routes->get('/daftar/download/(:segment)/(:segment)', 'Daftar::downloadDocument/$1/$2');
 
 // Auth Routes (Admin Only)
 $routes->get('/login', 'Auth::login');

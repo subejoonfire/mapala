@@ -21,7 +21,8 @@
                 
                 <!-- Download Section -->
                 <div class="space-y-4 mb-6">
-                    <!-- Formulir Pendaftaran PDF -->
+                    <?php if ($registration_docx): ?>
+                    <!-- Formulir Pendaftaran DOCX -->
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
@@ -29,18 +30,20 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
                                 <div>
-                                    <h4 class="text-sm font-medium text-blue-900">Formulir Pendaftaran (PDF)</h4>
-                                    <p class="text-xs text-blue-700">Dokumen pendaftaran Anda</p>
+                                    <h4 class="text-sm font-medium text-blue-900">Formulir Pendaftaran (DOCX)</h4>
+                                    <p class="text-xs text-blue-700">Dokumen pendaftaran Anda yang sudah terisi</p>
                                 </div>
                             </div>
-                            <a href="/download/pdf/<?= $registration_pdf ?>" 
+                            <a href="/daftar/download/registration/<?= $registration_docx ?>" 
                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
                                 Download
                             </a>
                         </div>
                     </div>
+                    <?php endif; ?>
                     
-                    <!-- ID Card PDF -->
+                    <?php if ($id_card_docx): ?>
+                    <!-- ID Card DOCX -->
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
@@ -48,16 +51,17 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 114 0v2m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
                                 </svg>
                                 <div>
-                                    <h4 class="text-sm font-medium text-green-900">ID Card MAPALA (PDF)</h4>
-                                    <p class="text-xs text-green-700">Kartu identitas sementara</p>
+                                    <h4 class="text-sm font-medium text-green-900">ID Card MAPALA (DOCX)</h4>
+                                    <p class="text-xs text-green-700">Kartu identitas sementara yang sudah terisi</p>
                                 </div>
                             </div>
-                            <a href="/download/pdf/<?= $id_card_pdf ?>" 
+                            <a href="/daftar/download/idcard/<?= $id_card_docx ?>" 
                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
                                 Download
                             </a>
                         </div>
                     </div>
+                    <?php endif; ?>
                     
                     <!-- WhatsApp Group Link -->
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -83,6 +87,7 @@
                 <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
                     <h4 class="text-sm font-medium text-blue-800 mb-2">Langkah Selanjutnya:</h4>
                     <ul class="text-sm text-blue-700 space-y-1">
+                        <li>• Download dokumen pendaftaran dan ID Card</li>
                         <li>• Admin akan memverifikasi data Anda dalam 1-2 hari kerja</li>
                         <li>• Setelah disetujui, status Anda akan berubah menjadi "Approved"</li>
                         <li>• Ikuti kegiatan orientasi yang akan dijadwalkan</li>
