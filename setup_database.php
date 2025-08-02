@@ -1,26 +1,33 @@
 <?php
 
-// Script untuk setup database MAPALA Politala
-// Pastikan folder writable sudah ada dan bisa ditulis
+// Script untuk setup database MAPALA Politala dengan MySQL
+// Pastikan MySQL server sudah berjalan dan user root sudah dikonfigurasi
 
-echo "🚀 Setting up MAPALA Politala Database...\n\n";
+echo "🚀 Setting up MAPALA Politala Database (MySQL)...\n\n";
 
-// Buat folder untuk database jika belum ada
-$dbPath = __DIR__ . '/writable/mapala.db';
-$dbDir = dirname($dbPath);
+// Konfigurasi database
+$host = 'localhost';
+$username = 'root';
+$password = '';
+$database = 'mapala_db';
 
-if (!is_dir($dbDir)) {
-    mkdir($dbDir, 0755, true);
-    echo "✅ Created database directory: {$dbDir}\n";
+// Cek koneksi MySQL
+try {
+    $pdo = new PDO("mysql:host={$host}", $username, $password);
+    echo "✅ MySQL connection successful\n";
+} catch (PDOException $e) {
+    echo "❌ MySQL connection failed: " . $e->getMessage() . "\n";
+    echo "💡 Pastikan MySQL server sudah berjalan dan user root sudah dikonfigurasi\n";
+    exit(1);
 }
 
-// Buat database SQLite jika belum ada
-if (!file_exists($dbPath)) {
-    touch($dbPath);
-    chmod($dbPath, 0644);
-    echo "✅ Created SQLite database: {$dbPath}\n";
-} else {
-    echo "ℹ️  Database already exists: {$dbPath}\n";
+// Buat database jika belum ada
+try {
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
+    echo "✅ Database '{$database}' created/verified\n";
+} catch (PDOException $e) {
+    echo "❌ Failed to create database: " . $e->getMessage() . "\n";
+    exit(1);
 }
 
 // Jalankan migration
@@ -37,7 +44,7 @@ echo $seederOutput;
 
 echo "\n✅ Database setup completed!\n";
 echo "📋 Summary:\n";
-echo "   - Database: SQLite at {$dbPath}\n";
+echo "   - Database: MySQL '{$database}' on {$host}\n";
 echo "   - Tables: users, divisi, kegiatan, kegiatan_foto, video_angkatan, kode_etik, id_card\n";
 echo "   - Sample data: 5 divisi, 5 users, 5 kegiatan, 15 foto kegiatan, 5 video angkatan\n";
 echo "\n🔑 Default login credentials:\n";
