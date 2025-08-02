@@ -168,18 +168,12 @@
                         
                         <div></div> <!-- Empty div for spacing -->
                         
-                        <div>
-                            <label for="pekerjaan_ayah" class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan Ayah *</label>
-                            <input type="text" id="pekerjaan_ayah" name="pekerjaan_ayah" required 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                   value="<?= old('pekerjaan_ayah') ?>" placeholder="Masukkan pekerjaan ayah">
-                        </div>
-                        
-                        <div>
-                            <label for="pekerjaan_ibu" class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan Ibu *</label>
-                            <input type="text" id="pekerjaan_ibu" name="pekerjaan_ibu" required 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                   value="<?= old('pekerjaan_ibu') ?>" placeholder="Masukkan pekerjaan ibu">
+                        <div class="md:col-span-2">
+                            <label for="pekerjaan_orangtua" class="block text-sm font-medium text-gray-700 mb-2">Pekerjaan Orangtua *</label>
+                            <textarea id="pekerjaan_orangtua" name="pekerjaan_orangtua" required rows="2"
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Contoh: Ayah: Petani, Ibu: Ibu Rumah Tangga"><?= old('pekerjaan_orangtua') ?></textarea>
+                            <p class="text-xs text-gray-500 mt-1">Sebutkan pekerjaan ayah dan ibu</p>
                         </div>
                     </div>
                 </div>
