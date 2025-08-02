@@ -23,7 +23,6 @@ class CreateKegiatanFoto extends Migration
             'judul' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '200',
-                'null'       => true,
             ],
             'deskripsi' => [
                 'type' => 'TEXT',

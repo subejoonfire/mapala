@@ -61,10 +61,8 @@ class CreateDivisi extends Migration
         ]);
         
         $this->forge->addKey('id', true);
+        $this->forge->addUniqueKey('slug');
         $this->forge->createTable('divisi');
-        
-        // Tambahkan unique key setelah table dibuat
-        $this->db->query("ALTER TABLE divisi ADD UNIQUE KEY unique_slug (slug)");
     }
 
     public function down()
