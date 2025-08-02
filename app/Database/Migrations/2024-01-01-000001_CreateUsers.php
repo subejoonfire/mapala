@@ -99,9 +99,11 @@ class CreateUsers extends Migration
         ]);
         
         $this->forge->addKey('id', true);
-        $this->forge->addUniqueKey('nim');
-        $this->forge->addUniqueKey('email');
         $this->forge->createTable('users');
+        
+        // Tambahkan unique keys setelah table dibuat
+        $this->db->query("ALTER TABLE users ADD UNIQUE KEY unique_nim (nim)");
+        $this->db->query("ALTER TABLE users ADD UNIQUE KEY unique_email (email)");
     }
 
     public function down()
