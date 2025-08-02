@@ -14,13 +14,13 @@ app.baseURL = 'http://localhost:8080/'
 # DATABASE
 #--------------------------------------------------------------------
 
-database.default.hostname = 
-database.default.database = writable/mapala.db
-database.default.username = 
+database.default.hostname = localhost
+database.default.database = mapala_db
+database.default.username = root
 database.default.password = 
-database.default.DBDriver = SQLite3
+database.default.DBDriver = MySQLi
 database.default.DBPrefix =
-database.default.port = 
+database.default.port = 3306
 
 #--------------------------------------------------------------------
 # SESSION

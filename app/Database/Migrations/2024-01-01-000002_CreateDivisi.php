@@ -22,7 +22,6 @@ class CreateDivisi extends Migration
             'slug' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '100',
-                'unique'     => true,
             ],
             'deskripsi' => [
                 'type' => 'TEXT',

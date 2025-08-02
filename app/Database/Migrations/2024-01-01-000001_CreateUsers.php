@@ -18,7 +18,6 @@ class CreateUsers extends Migration
             'nim' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '20',
-                'unique'     => true,
             ],
             'nama_lengkap' => [
                 'type'       => 'VARCHAR',
@@ -27,7 +26,6 @@ class CreateUsers extends Migration
             'email' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '100',
-                'unique'     => true,
             ],
             'password' => [
                 'type'       => 'VARCHAR',

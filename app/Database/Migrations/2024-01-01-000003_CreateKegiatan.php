@@ -22,7 +22,6 @@ class CreateKegiatan extends Migration
             'slug' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '200',
-                'unique'     => true,
             ],
             'deskripsi' => [
                 'type' => 'TEXT',

@@ -23,7 +23,6 @@ class CreateIdCard extends Migration
             'nomor_id' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '50',
-                'unique'     => true,
             ],
             'divisi_id' => [
                 'type'       => 'INT',
