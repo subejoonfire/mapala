@@ -12,15 +12,14 @@ class AdminFilter implements FilterInterface
     {
         $session = session();
         
-        // Cek apakah user sudah login
-        if (!$session->get('user_id')) {
+        // Check if admin is logged in
+        if (!$session->get('admin_id')) {
             return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu.');
         }
         
-        // Cek apakah user adalah admin
-        $userRole = $session->get('user_role');
-        if ($userRole !== 'admin') {
-            return redirect()->to('/dashboard')->with('error', 'Anda tidak memiliki akses ke halaman admin.');
+        // Check if admin is active
+        if ($session->get('admin_role') !== 'admin') {
+            return redirect()->to('/login')->with('error', 'Anda tidak memiliki akses ke halaman admin.');
         }
     }
 

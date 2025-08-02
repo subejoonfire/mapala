@@ -27,10 +27,6 @@ class CreateUsers extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '100',
             ],
-            'password' => [
-                'type'       => 'VARCHAR',
-                'constraint' => '255',
-            ],
             'no_wa' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '20',
@@ -72,11 +68,6 @@ class CreateUsers extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
                 'null'       => true,
-            ],
-            'role' => [
-                'type'       => 'VARCHAR',
-                'constraint' => '20',
-                'default'    => 'calon_anggota',
             ],
             'status' => [
                 'type'       => 'VARCHAR',

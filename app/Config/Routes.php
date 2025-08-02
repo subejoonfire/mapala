@@ -6,54 +6,43 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
-// Home Routes
+// Public Routes (No Authentication Required)
 $routes->get('/', 'Home::index');
-$routes->get('about', 'Home::about');
-$routes->get('contact', 'Home::contact');
-$routes->get('search', 'Home::search');
-$routes->get('sitemap', 'Home::sitemap');
-$routes->get('robots', 'Home::robots');
+$routes->get('/about', 'Home::about');
+$routes->get('/contact', 'Home::contact');
+$routes->get('/search', 'Home::search');
 
-// Auth Routes
-$routes->get('login', 'Auth::login');
-$routes->post('login', 'Auth::login');
-$routes->get('logout', 'Auth::logout');
-$routes->get('register', 'Auth::register');
-$routes->post('register', 'Auth::register');
-$routes->get('register/success', 'Auth::registerSuccess');
-$routes->get('forgot-password', 'Auth::forgotPassword');
-$routes->post('forgot-password', 'Auth::forgotPassword');
-$routes->get('reset-password/(:segment)', 'Auth::resetPassword/$1');
-$routes->post('reset-password/(:segment)', 'Auth::resetPassword/$1');
+// Divisi Routes (Public)
+$routes->get('/divisi', 'Divisi::index');
+$routes->get('/divisi/(:segment)', 'Divisi::show/$1');
 
-// Divisi Routes
-$routes->get('divisi', 'Divisi::index');
-$routes->get('divisi/(:segment)', 'Divisi::show/$1');
+// Kegiatan Routes (Public)
+$routes->get('/kegiatan', 'Kegiatan::index');
+$routes->get('/kegiatan/(:segment)', 'Kegiatan::show/$1');
 
-// Kegiatan Routes
-$routes->get('kegiatan', 'Kegiatan::index');
-$routes->get('kegiatan/(:segment)', 'Kegiatan::show/$1');
+// Kode Etik Routes (Public)
+$routes->get('/kode-etik', 'KodeEtik::index');
+$routes->get('/kode-etik/(:segment)', 'KodeEtik::show/$1');
 
-// Kode Etik Routes
-$routes->get('kode-etik', 'KodeEtik::index');
-$routes->get('kode-etik/(:segment)', 'KodeEtik::show/$1');
-
-// Member Routes (requires login)
-$routes->group('', ['filter' => 'auth'], function($routes) {
-    $routes->get('dashboard', 'Dashboard::index');
-    $routes->get('profile', 'Profile::index');
-    $routes->post('profile', 'Profile::update');
-    
-    // Video Angkatan (member only)
-    $routes->get('video-angkatan', 'VideoAngkatan::index');
-    $routes->get('video-angkatan/(:num)', 'VideoAngkatan::show/$1');
-    
-    // Download documents (member only)
-    $routes->get('download/(:segment)', 'Download::document/$1');
+// Video Angkatan Routes (Member Only)
+$routes->group('video-angkatan', ['filter' => 'auth'], function($routes) {
+    $routes->get('/', 'VideoAngkatan::index');
+    $routes->get('/(:segment)', 'VideoAngkatan::show/$1');
 });
 
-// Admin Routes (requires admin)
+// Daftar MAPALA Routes (Public)
+$routes->get('/daftar', 'Daftar::index');
+$routes->post('/daftar', 'Daftar::store');
+$routes->get('/daftar/success', 'Daftar::success');
+
+// Auth Routes (Admin Only)
+$routes->get('/login', 'Auth::login');
+$routes->post('/login', 'Auth::authenticate');
+$routes->get('/logout', 'Auth::logout');
+
+// Admin Routes (Admin Authentication Required)
 $routes->group('admin', ['filter' => 'admin'], function($routes) {
+    $routes->get('/', 'Admin\Dashboard::index');
     $routes->get('dashboard', 'Admin\Dashboard::index');
     
     // User Management
@@ -99,44 +88,34 @@ $routes->group('admin', ['filter' => 'admin'], function($routes) {
     $routes->post('video-angkatan/(:num)/delete', 'Admin\VideoAngkatan::delete/$1');
     
     // ID Card Management
-    $routes->get('id-cards', 'Admin\IdCard::index');
-    $routes->get('id-cards/create', 'Admin\IdCard::create');
-    $routes->post('id-cards', 'Admin\IdCard::store');
-    $routes->get('id-cards/(:num)/edit', 'Admin\IdCard::edit/$1');
-    $routes->post('id-cards/(:num)', 'Admin\IdCard::update/$1');
-    $routes->post('id-cards/(:num)/delete', 'Admin\IdCard::delete/$1');
-    $routes->get('id-cards/(:num)/generate', 'Admin\IdCard::generate/$1');
+    $routes->get('id-card', 'Admin\IdCard::index');
+    $routes->get('id-card/create', 'Admin\IdCard::create');
+    $routes->post('id-card', 'Admin\IdCard::store');
+    $routes->get('id-card/(:num)/edit', 'Admin\IdCard::edit/$1');
+    $routes->post('id-card/(:num)', 'Admin\IdCard::update/$1');
+    $routes->post('id-card/(:num)/delete', 'Admin\IdCard::delete/$1');
     
     // Reports
     $routes->get('reports', 'Admin\Reports::index');
     $routes->get('reports/users', 'Admin\Reports::users');
-    $routes->get('reports/kegiatan', 'Admin\Reports::kegiatan');
-    $routes->get('reports/divisi', 'Admin\Reports::divisi');
+    $routes->get('reports/activities', 'Admin\Reports::activities');
 });
 
-// API Routes (for AJAX requests)
+// API Routes
 $routes->group('api', function($routes) {
     $routes->get('divisi', 'Api\Divisi::index');
     $routes->get('kegiatan', 'Api\Kegiatan::index');
     $routes->get('search', 'Api\Search::index');
 });
 
-// PDF Generation Routes
+// Utility Routes
+$routes->get('download/(:segment)', 'Download::index/$1');
+$routes->post('upload', 'Upload::index');
 $routes->get('pdf/registration/(:num)', 'Pdf::registration/$1');
 $routes->get('pdf/id-card/(:num)', 'Pdf::idCard/$1');
+$routes->get('whatsapp/(:segment)', 'WhatsApp::index/$1');
 
-// File Upload Routes
-$routes->post('upload/foto', 'Upload::foto');
-$routes->post('upload/document', 'Upload::document');
-
-// WhatsApp Integration
-$routes->get('whatsapp/join', 'WhatsApp::join');
-
-// Error Pages
+// Error Routes
 $routes->set404Override(function() {
     return view('errors/404');
-});
-
-$routes->get('500', function() {
-    return view('errors/500');
 });
