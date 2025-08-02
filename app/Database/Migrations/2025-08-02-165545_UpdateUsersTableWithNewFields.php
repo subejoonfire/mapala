@@ -69,11 +69,17 @@ class UpdateUsersTableWithNewFields extends Migration
                 'null' => false,
                 'after' => 'alamat_orangtua'
             ],
-            'pekerjaan_orangtua' => [
+            'pekerjaan_ayah' => [
                 'type' => 'VARCHAR',
                 'constraint' => 200,
                 'null' => false,
                 'after' => 'no_telp_orangtua'
+            ],
+            'pekerjaan_ibu' => [
+                'type' => 'VARCHAR',
+                'constraint' => 200,
+                'null' => false,
+                'after' => 'pekerjaan_ayah'
             ]
         ];
         
@@ -89,7 +95,7 @@ class UpdateUsersTableWithNewFields extends Migration
         // Drop new columns only if they exist
         $newColumns = ['nama_panggilan', 'jenis_kelamin', 'no_telp', 'gol_darah', 
                       'nama_ayah', 'nama_ibu', 'alamat_orangtua', 'no_telp_orangtua', 
-                      'pekerjaan_orangtua'];
+                      'pekerjaan_ayah', 'pekerjaan_ibu'];
         
         $columnsToDrop = array_intersect($newColumns, $columns);
         if (!empty($columnsToDrop)) {

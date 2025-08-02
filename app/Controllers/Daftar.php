@@ -91,7 +91,14 @@ class Daftar extends BaseController
 
         if ($foto->isValid() && !$foto->hasMoved()) {
             $fotoName = $foto->getRandomName();
-            $foto->move(ROOTPATH . 'public/uploads/fotos', $fotoName);
+            
+            // Ensure upload directory exists
+            $uploadPath = ROOTPATH . 'public/uploads/fotos/';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            
+            $foto->move($uploadPath, $fotoName);
         }
 
         // Prepare user data
@@ -118,30 +125,46 @@ class Daftar extends BaseController
             'angkatan' => date('Y')
         ];
 
+        // Log the data being inserted for debugging
+        log_message('info', 'Attempting to insert user data: ' . json_encode($userData));
+
         // Save user
-        if ($this->userModel->insert($userData)) {
-            $userId = $this->userModel->insertID();
-            
-            // Generate DOCX files
-            $registrationDocxPath = $this->generateRegistrationDOCX($userData);
-            $idCardDocxPath = $this->generateIdCardDOCX($userData);
-            
-            // Get WhatsApp link from settings
-            $whatsappLink = $this->settingModel->getValue('whatsapp_group_link', 'https://chat.whatsapp.com/example');
-            $whatsappName = $this->settingModel->getValue('whatsapp_group_name', 'MAPALA Politala Official');
-            
-            // Store DOCX paths in session for download
-            session()->set([
-                'registration_docx' => $registrationDocxPath,
-                'id_card_docx' => $idCardDocxPath,
-                'whatsapp_link' => $whatsappLink,
-                'whatsapp_name' => $whatsappName,
-                'user_data' => $userData
-            ]);
-            
-            return redirect()->to('/daftar/success')->with('success', 'Pendaftaran berhasil! Silakan download dokumen Anda.');
-        } else {
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar');
+        try {
+            if ($this->userModel->insert($userData)) {
+                $userId = $this->userModel->insertID();
+                
+                // Generate DOCX files
+                $registrationDocxPath = $this->generateRegistrationDOCX($userData);
+                $idCardDocxPath = $this->generateIdCardDOCX($userData);
+                
+                // Get WhatsApp link from settings
+                try {
+                    $whatsappLink = $this->settingModel->getValue('whatsapp_group_link', 'https://chat.whatsapp.com/example');
+                    $whatsappName = $this->settingModel->getValue('whatsapp_group_name', 'MAPALA Politala Official');
+                } catch (\Exception $e) {
+                    log_message('warning', 'Settings table not available, using defaults: ' . $e->getMessage());
+                    $whatsappLink = 'https://chat.whatsapp.com/example';
+                    $whatsappName = 'MAPALA Politala Official';
+                }
+                
+                // Store DOCX paths in session for download
+                session()->set([
+                    'registration_docx' => $registrationDocxPath,
+                    'id_card_docx' => $idCardDocxPath,
+                    'whatsapp_link' => $whatsappLink,
+                    'whatsapp_name' => $whatsappName,
+                    'user_data' => $userData
+                ]);
+                
+                return redirect()->to('/daftar/success')->with('success', 'Pendaftaran berhasil! Silakan download dokumen Anda.');
+            } else {
+                log_message('error', 'Failed to insert user data: ' . json_encode($this->userModel->errors()));
+                return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar: ' . implode(', ', $this->userModel->errors()));
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Exception during user registration: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar: ' . $e->getMessage());
         }
     }
 
@@ -278,8 +301,12 @@ class Daftar extends BaseController
             $filepath = ROOTPATH . 'public/uploads/documents/' . $filename;
             
             // Ensure directory exists
-            if (!is_dir(dirname($filepath))) {
-                mkdir(dirname($filepath), 0755, true);
+            $uploadDir = dirname($filepath);
+            if (!is_dir($uploadDir)) {
+                if (!mkdir($uploadDir, 0755, true)) {
+                    log_message('error', 'Failed to create directory: ' . $uploadDir);
+                    return null;
+                }
             }
             
             $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
@@ -289,6 +316,7 @@ class Daftar extends BaseController
             
         } catch (\Exception $e) {
             log_message('error', 'Error generating registration DOCX: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             return null;
         }
     }
@@ -329,8 +357,12 @@ class Daftar extends BaseController
             $filepath = ROOTPATH . 'public/uploads/documents/' . $filename;
             
             // Ensure directory exists
-            if (!is_dir(dirname($filepath))) {
-                mkdir(dirname($filepath), 0755, true);
+            $uploadDir = dirname($filepath);
+            if (!is_dir($uploadDir)) {
+                if (!mkdir($uploadDir, 0755, true)) {
+                    log_message('error', 'Failed to create directory: ' . $uploadDir);
+                    return null;
+                }
             }
             
             $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
@@ -340,6 +372,7 @@ class Daftar extends BaseController
             
         } catch (\Exception $e) {
             log_message('error', 'Error generating ID Card DOCX: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             return null;
         }
     }
