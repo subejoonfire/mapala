@@ -20,7 +20,7 @@ class Auth extends BaseController
             return redirect()->to('/dashboard');
         }
 
-        if ($this->request->getMethod() === 'post') {
+        if ($this->request->getMethod() === 'POST') {
             $email = $this->request->getPost('email');
             $password = $this->request->getPost('password');
 
@@ -62,7 +62,7 @@ class Auth extends BaseController
 
     public function register()
     {
-        if ($this->request->getMethod() === 'post') {
+        if ($this->request->getMethod() === 'POST') {
             $rules = [
                 'nim' => 'required|min_length[8]|max_length[20]|is_unique[users.nim]',
                 'nama_lengkap' => 'required|min_length[3]|max_length[100]',
@@ -121,7 +121,7 @@ class Auth extends BaseController
             if ($this->userModel->insert($userData)) {
                 // Generate PDF
                 $this->generateRegistrationPDF($userData);
-                
+
                 return redirect()->to('/register/success')->with('success', 'Pendaftaran berhasil! Silakan cek email Anda untuk informasi selanjutnya.');
             } else {
                 return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar');
@@ -166,7 +166,7 @@ class Auth extends BaseController
 
     public function forgotPassword()
     {
-        if ($this->request->getMethod() === 'post') {
+        if ($this->request->getMethod() === 'POST') {
             $email = $this->request->getPost('email');
             $user = $this->userModel->where('email', $email)->first();
 
@@ -199,7 +199,7 @@ class Auth extends BaseController
             return redirect()->to('/login')->with('error', 'Token reset password tidak valid');
         }
 
-        if ($this->request->getMethod() === 'post') {
+        if ($this->request->getMethod() === 'POST') {
             $password = $this->request->getPost('password');
             $confirm_password = $this->request->getPost('confirm_password');
 
