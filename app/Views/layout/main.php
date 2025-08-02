@@ -234,7 +234,7 @@
                         <li><a href="/kode-etik" class="hover:text-white transition-colors">Kode Etik</a></li>
                         <li><a href="/kegiatan" class="hover:text-white transition-colors">Kegiatan</a></li>
                         <li><a href="/contact" class="hover:text-white transition-colors">Kontak</a></li>
-                        <li><a href="/register" class="hover:text-white transition-colors">Daftar Anggota</a></li>
+                        <li><a href="/daftar" class="hover:text-white transition-colors">Daftar MAPALA</a></li>
                     </ul>
                 </div>
             </div>
