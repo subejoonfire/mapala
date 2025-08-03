@@ -162,116 +162,65 @@ class Daftar extends BaseController
     private function generateRegistrationDOCX($userData)
     {
         try {
-            $phpWord = new PhpWord();
-            $section = $phpWord->addSection();
+            // Path to template - using the simple template with placeholders
+            $templatePath = ROOTPATH . 'app/template_formulir_simple.docx';
             
-            // Header
-            $headerStyle = ['name' => 'Arial', 'size' => 16, 'bold' => true];
-            $section->addText('FORMULIR PENDAFTARAN MAPALA POLITALA', $headerStyle, ['alignment' => 'center']);
-            $section->addText('Mahasiswa Pecinta Alam Politeknik Negeri Tanah Laut', ['name' => 'Arial', 'size' => 12], ['alignment' => 'center']);
-            $section->addTextBreak(2);
+            if (!file_exists($templatePath)) {
+                log_message('error', 'Template not found: ' . $templatePath);
+                return null;
+            }
             
-            // Data Pribadi
-            $section->addText('DATA PRIBADI', ['name' => 'Arial', 'size' => 12, 'bold' => true]);
-            $section->addTextBreak();
+            // Create template processor
+            $templateProcessor = new TemplateProcessor($templatePath);
             
-            $tableStyle = ['borderSize' => 6, 'borderColor' => '999999', 'cellMargin' => 80];
-            $table = $section->addTable($tableStyle);
+            // Prepare data for template replacement
+            $templateData = [
+                'nama_lengkap' => $userData['nama_lengkap'],
+                'nama_panggilan' => $userData['nama_panggilan'],
+                'tempat_lahir' => $userData['tempat_lahir'],
+                'tanggal_lahir' => date('d F Y', strtotime($userData['tanggal_lahir'])),
+                'tempat_tanggal_lahir' => $userData['tempat_lahir'] . ', ' . date('d F Y', strtotime($userData['tanggal_lahir'])),
+                'jenis_kelamin' => $userData['jenis_kelamin'],
+                'alamat' => $userData['alamat'],
+                'no_telp' => $userData['no_telp'],
+                'agama' => $userData['agama'],
+                'program_studi' => $userData['program_studi'],
+                'gol_darah' => $userData['gol_darah'],
+                'penyakit' => $userData['penyakit'] ?: 'Tidak ada',
+                'nama_ayah' => $userData['nama_ayah'],
+                'nama_ibu' => $userData['nama_ibu'],
+                'alamat_orangtua' => $userData['alamat_orangtua'],
+                'no_telp_orangtua' => $userData['no_telp_orangtua'],
+                'pekerjaan_ayah' => $userData['pekerjaan_ayah'],
+                'pekerjaan_ibu' => $userData['pekerjaan_ibu'],
+                'tanggal_daftar' => date('d F Y'),
+                'angkatan' => $userData['angkatan'],
+                'status' => 'PENDING - Menunggu persetujuan admin'
+            ];
             
-            // Add rows
-            $table->addRow();
-            $table->addCell(4000)->addText('Nama Lengkap', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['nama_lengkap']);
+            // Replace text placeholders
+            foreach ($templateData as $placeholder => $value) {
+                $templateProcessor->setValue($placeholder, $value);
+            }
             
-            $table->addRow();
-            $table->addCell(4000)->addText('Nama Panggilan', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['nama_panggilan']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Tempat dan Tanggal Lahir', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['tempat_lahir'] . ', ' . date('d F Y', strtotime($userData['tanggal_lahir'])));
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Jenis Kelamin', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['jenis_kelamin']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Alamat', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['alamat']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('No. Telp/ HP', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['no_telp']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Agama', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['agama']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Prodi / Jurusan', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['program_studi']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Gol. Darah', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['gol_darah']);
-            
-            $table->addRow();
-            $table->addCell(4000)->addText('Penyakit yang diderita', ['bold' => true]);
-            $table->addCell(500)->addText(':');
-            $table->addCell(4000)->addText($userData['penyakit'] ?: 'Tidak ada');
-            
-            $section->addTextBreak(2);
-            
-            // Data Orangtua
-            $section->addText('DATA ORANGTUA', ['name' => 'Arial', 'size' => 12, 'bold' => true]);
-            $section->addTextBreak();
-            
-            $table2 = $section->addTable($tableStyle);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Nama Ayah', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['nama_ayah']);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Nama Ibu', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['nama_ibu']);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Alamat Orangtua', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['alamat_orangtua']);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('No. Telp./ HP Orangtua', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['no_telp_orangtua']);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Pekerjaan Ayah', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['pekerjaan_ayah']);
-            
-            $table2->addRow();
-            $table2->addCell(4000)->addText('Pekerjaan Ibu', ['bold' => true]);
-            $table2->addCell(500)->addText(':');
-            $table2->addCell(4000)->addText($userData['pekerjaan_ibu']);
-            
-            $section->addTextBreak(2);
-            
-            // Footer
-            $section->addText('Dokumen ini dibuat otomatis pada tanggal ' . date('d F Y'), ['name' => 'Arial', 'size' => 10], ['alignment' => 'center']);
-            $section->addText('Status: PENDING - Menunggu persetujuan admin', ['name' => 'Arial', 'size' => 10], ['alignment' => 'center']);
+            // Handle photo if exists
+            if (!empty($userData['foto'])) {
+                $photoPath = ROOTPATH . 'public/uploads/fotos/' . $userData['foto'];
+                if (file_exists($photoPath)) {
+                    // Add photo to template (size in cm)
+                    $templateProcessor->setImageValue('foto', [
+                        'path' => $photoPath,
+                        'width' => 300, // pixels
+                        'height' => 400, // pixels
+                        'ratio' => false
+                    ]);
+                } else {
+                    // If photo not found, set placeholder text
+                    $templateProcessor->setValue('foto', 'Foto tidak tersedia');
+                }
+            } else {
+                $templateProcessor->setValue('foto', 'Foto tidak tersedia');
+            }
             
             // Save the generated document
             $filename = 'formulir_pendaftaran_' . preg_replace('/[^a-zA-Z0-9]/', '_', $userData['nama_lengkap']) . '_' . date('Y-m-d_H-i-s') . '.docx';
@@ -282,8 +231,8 @@ class Daftar extends BaseController
                 mkdir(dirname($filepath), 0755, true);
             }
             
-            $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
-            $objWriter->save($filepath);
+            // Save the document
+            $templateProcessor->saveAs($filepath);
             
             return $filename;
             
@@ -296,33 +245,54 @@ class Daftar extends BaseController
     private function generateIdCardDOCX($userData)
     {
         try {
-            $phpWord = new PhpWord();
-            $section = $phpWord->addSection(['marginLeft' => 1000, 'marginRight' => 1000, 'marginTop' => 1000, 'marginBottom' => 1000]);
+            // Path to template - using the simple template with placeholders
+            $templatePath = ROOTPATH . 'app/template_id_card_simple.docx';
             
-            // Header
-            $headerStyle = ['name' => 'Arial', 'size' => 18, 'bold' => true, 'color' => '16a34a'];
-            $section->addText('MAPALA POLITALA', $headerStyle, ['alignment' => 'center']);
-            $section->addText('Mahasiswa Pecinta Alam', ['name' => 'Arial', 'size' => 12], ['alignment' => 'center']);
-            $section->addText('Politeknik Negeri Tanah Laut', ['name' => 'Arial', 'size' => 12], ['alignment' => 'center']);
-            $section->addTextBreak(2);
+            if (!file_exists($templatePath)) {
+                log_message('error', 'Template not found: ' . $templatePath);
+                return null;
+            }
             
-            // ID Card Content
-            $tableStyle = ['borderSize' => 6, 'borderColor' => '16a34a', 'cellMargin' => 80];
-            $table = $section->addTable($tableStyle);
+            // Create template processor
+            $templateProcessor = new TemplateProcessor($templatePath);
             
-            $table->addRow();
-            $table->addCell(3000)->addText('FOTO', ['name' => 'Arial', 'size' => 12, 'color' => '999999'], ['alignment' => 'center']);
-            $cell = $table->addCell(5000);
-            $cell->addText('Nama: ' . $userData['nama_lengkap'], ['name' => 'Arial', 'size' => 10, 'bold' => true]);
-            $cell->addText('Program Studi: ' . $userData['program_studi'], ['name' => 'Arial', 'size' => 10]);
-            $cell->addText('Angkatan: ' . $userData['angkatan'], ['name' => 'Arial', 'size' => 10]);
-            $cell->addText('Status: CALON ANGGOTA', ['name' => 'Arial', 'size' => 10, 'bold' => true]);
+            // Prepare data for template replacement
+            $templateData = [
+                'nama_lengkap' => $userData['nama_lengkap'],
+                'nama_panggilan' => $userData['nama_panggilan'],
+                'program_studi' => $userData['program_studi'],
+                'angkatan' => $userData['angkatan'],
+                'jenis_kelamin' => $userData['jenis_kelamin'],
+                'gol_darah' => $userData['gol_darah'],
+                'no_telp' => $userData['no_telp'],
+                'status' => 'CALON ANGGOTA',
+                'tanggal_terbit' => date('d F Y'),
+                'tahun' => date('Y')
+            ];
             
-            $section->addTextBreak(2);
+            // Replace text placeholders
+            foreach ($templateData as $placeholder => $value) {
+                $templateProcessor->setValue($placeholder, $value);
+            }
             
-            // Footer
-            $section->addText('ID Card ini berlaku sampai persetujuan admin', ['name' => 'Arial', 'size' => 8], ['alignment' => 'center']);
-            $section->addText('Diterbitkan pada: ' . date('d F Y'), ['name' => 'Arial', 'size' => 8], ['alignment' => 'center']);
+            // Handle photo if exists
+            if (!empty($userData['foto'])) {
+                $photoPath = ROOTPATH . 'public/uploads/fotos/' . $userData['foto'];
+                if (file_exists($photoPath)) {
+                    // Add photo to template (smaller size for ID card)
+                    $templateProcessor->setImageValue('foto', [
+                        'path' => $photoPath,
+                        'width' => 200, // pixels
+                        'height' => 250, // pixels
+                        'ratio' => false
+                    ]);
+                } else {
+                    // If photo not found, set placeholder text
+                    $templateProcessor->setValue('foto', 'Foto tidak tersedia');
+                }
+            } else {
+                $templateProcessor->setValue('foto', 'Foto tidak tersedia');
+            }
             
             // Save the generated document
             $filename = 'id_card_' . preg_replace('/[^a-zA-Z0-9]/', '_', $userData['nama_lengkap']) . '_' . date('Y-m-d_H-i-s') . '.docx';
@@ -333,8 +303,8 @@ class Daftar extends BaseController
                 mkdir(dirname($filepath), 0755, true);
             }
             
-            $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
-            $objWriter->save($filepath);
+            // Save the document
+            $templateProcessor->saveAs($filepath);
             
             return $filename;
             
