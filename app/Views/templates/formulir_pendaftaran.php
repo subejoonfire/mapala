@@ -1,236 +1,298 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulir Pendaftaran MAPALA Politala</title>
+    <title>Formulir Pendaftaran Calon Anggota Baru</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            font-size: 12px;
             margin: 0;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: #f0f0f0;
         }
+
         .container {
-            max-width: 800px;
-            margin: 0 auto;
             background-color: white;
             padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #ccc;
+            position: relative;
+            width: 700px;
+            /* A4 width on 96dpi screen */
+            height: 1000px;
+            /* A4 height on 96dpi screen */
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background-image: url('<?= base_url('mapala.png') ?>');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            opacity: 0.1;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Header Section */
         .header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e5e7eb;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
         }
-        .download-section {
+
+        .logo-left img,
+        .logo-right img {
+            width: 80px;
+            height: auto;
+        }
+
+        .title-section {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #f0f9ff;
-            border: 1px solid #0ea5e9;
-            border-radius: 8px;
+            flex-grow: 1;
         }
-        .download-btn {
-            display: inline-block;
-            background-color: #0ea5e9;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: background-color 0.3s;
+
+        .title-section h1 {
+            font-size: 14px;
+            margin: 0;
         }
-        .download-btn:hover {
-            background-color: #0284c7;
+
+        .title-section h2 {
+            font-size: 12px;
+            margin: 5px 0 0;
+            font-weight: normal;
         }
-        .form-section {
-            margin-bottom: 25px;
+
+        /* Main Form Content */
+        .form-content {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            position: relative;
+            z-index: 2;
         }
-        .form-section h3 {
-            color: #1f2937;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
+
+        .fields-left {
+            flex: 1;
+            width: 60%;
         }
+
+        .fields-right {
+            width: 40%;
+            display: flex;
+            justify-content: flex-end;
+        }
+
         .form-row {
             display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
+            align-items: flex-end;
+            margin-bottom: 10px;
         }
-        .form-group {
-            flex: 1;
+
+        .form-row label {
+            width: 150px;
+            white-space: nowrap;
+            padding-right: 5px;
         }
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #374151;
+
+        .dotted-line {
+            flex-grow: 1;
+            border-bottom: 1px dotted #000;
+            padding-left: 5px;
         }
-        .form-group .value {
-            padding: 8px 12px;
-            background-color: #f9fafb;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            min-height: 20px;
-        }
-        .photo-section {
+
+        .photo-box {
+            border: 1px solid #000;
+            width: 120px;
+            height: 150px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            margin: 20px 0;
+            font-size: 10px;
+            color: #666;
+            background-color: #f9f9f9;
         }
-        .photo-section img {
-            max-width: 200px;
-            max-height: 200px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
+
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: none;
         }
+
+        /* Signature Section */
+        .signature-section {
+            margin-top: 40px;
+            text-align: right;
+            position: relative;
+            z-index: 2;
+        }
+
+        .signature-section p {
+            margin: 5px 0;
+        }
+
+        /* Download Button */
+        .download-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 1000;
+        }
+
+        .download-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Aturan untuk cetak PDF */
         @media print {
-            .download-section {
+            .download-btn {
                 display: none;
             }
             body {
                 background-color: white;
             }
+
             .container {
+                border: none;
                 box-shadow: none;
+                padding: 0;
+                /* Mengatur ukuran kertas A4 secara presisi */
+                width: 210mm;
+                min-height: 297mm;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <!-- Download Section -->
-        <div class="download-section">
-            <h2 style="margin: 0 0 15px 0; color: #0c4a6e;">Download Dokumen</h2>
-            <p style="margin: 0 0 20px 0; color: #0369a1;">Klik tombol di bawah untuk mengunduh formulir pendaftaran dalam format PDF</p>
-            <a href="/daftar/formulir/pdf" class="download-btn">
-                📄 Download PDF Formulir Pendaftaran
-            </a>
-        </div>
+        <div class="watermark"></div>
 
-        <!-- Header -->
+        <!-- Download Button -->
+        <a href="/daftar/formulir/pdf" class="download-btn">Download PDF</a>
+
         <div class="header">
-            <h1 style="color: #1f2937; margin: 0;">FORMULIR PENDAFTARAN</h1>
-            <h2 style="color: #0ea5e9; margin: 10px 0;">MAPALA POLITALA</h2>
-            <p style="color: #6b7280; margin: 0;">Tahun Angkatan <?= date('Y') ?></p>
-        </div>
-
-        <!-- Data Pribadi -->
-        <div class="form-section">
-            <h3>A. DATA PRIBADI</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Nama Lengkap:</label>
-                    <div class="value"><?= $userData['nama_lengkap'] ?? '-' ?></div>
-                </div>
-                <div class="form-group">
-                    <label>Nama Panggilan:</label>
-                    <div class="value"><?= $userData['nama_panggilan'] ?? '-' ?></div>
-                </div>
+            <div class="logo-left">
+                <img src="<?= base_url('politala.png') ?>" alt="Logo Politala">
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Tempat Lahir:</label>
-                    <div class="value"><?= $userData['tempat_lahir'] ?? '-' ?></div>
-                </div>
-                <div class="form-group">
-                    <label>Tanggal Lahir:</label>
-                    <div class="value"><?= $userData['tanggal_lahir'] ? date('d/m/Y', strtotime($userData['tanggal_lahir'])) : '-' ?></div>
-                </div>
+            <div class="title-section">
+                <h1>FORMULIR PENDAFTARAN CALON ANGGOTA BARU</h1>
+                <h2>MAPALA POLITALA TAHUN <?= $userData['angkatan'] ?></h2>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Jenis Kelamin:</label>
-                    <div class="value"><?= $userData['jenis_kelamin'] ?? '-' ?></div>
-                </div>
-                <div class="form-group">
-                    <label>Golongan Darah:</label>
-                    <div class="value"><?= $userData['gol_darah'] ?? '-' ?></div>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Agama:</label>
-                    <div class="value"><?= $userData['agama'] ?? '-' ?></div>
-                </div>
-                <div class="form-group">
-                    <label>Program Studi:</label>
-                    <div class="value"><?= $userData['program_studi'] ?? '-' ?></div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Alamat:</label>
-                <div class="value"><?= $userData['alamat'] ?? '-' ?></div>
-            </div>
-            <div class="form-group">
-                <label>No. Telepon:</label>
-                <div class="value"><?= $userData['no_telp'] ?? '-' ?></div>
-            </div>
-            <div class="form-group">
-                <label>Riwayat Penyakit (jika ada):</label>
-                <div class="value"><?= $userData['penyakit'] ?: 'Tidak ada' ?></div>
+            <div class="logo-right">
+                <img src="<?= base_url('mapala.png') ?>" alt="Logo Mapala">
             </div>
         </div>
 
-        <!-- Data Orang Tua -->
-        <div class="form-section">
-            <h3>B. DATA ORANG TUA</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Nama Ayah:</label>
-                    <div class="value"><?= $userData['nama_ayah'] ?? '-' ?></div>
+        <div class="form-content">
+            <div class="fields-left">
+                <div class="form-row">
+                    <label>Nama Lengkap</label>
+                    <span class="dotted-line"><?= $userData['nama_lengkap'] ?></span>
                 </div>
-                <div class="form-group">
-                    <label>Pekerjaan Ayah:</label>
-                    <div class="value"><?= $userData['pekerjaan_ayah'] ?? '-' ?></div>
+                <div class="form-row">
+                    <label>Nama Panggilan</label>
+                    <span class="dotted-line"><?= $userData['nama_panggilan'] ?></span>
+                </div>
+                <div class="form-row">
+                    <label>Tempat dan Tanggal Lahir</label>
+                    <span class="dotted-line"><?= $userData['tempat_lahir'] . ', ' . date('d F Y', strtotime($userData['tanggal_lahir'])) ?></span>
+                </div>
+                <div class="form-row">
+                    <label>Jenis Kelamin</label>
+                    <span class="dotted-line"><?= $userData['jenis_kelamin'] ?></span>
+                </div>
+                <div class="form-row">
+                    <label>Alamat</label>
+                    <span class="dotted-line"><?= $userData['alamat'] ?></span>
+                </div>
+                <div class="form-row">
+                    <label>No. Telp/HP</label>
+                    <span class="dotted-line"><?= $userData['no_telp'] ?></span>
+                </div>
+                <div class="form-row">
+                    <label>Agama</label>
+                    <span class="dotted-line"><?= $userData['agama'] ?></span>
+                </div>
+                <div class="form-row">
+                    <label>Prodi / Jurusan</label>
+                    <span class="dotted-line"><?= $userData['program_studi'] ?></span>
+                </div>
+                <div class="form-row">
+                    <label>Gol. Darah</label>
+                    <span class="dotted-line"><?= $userData['gol_darah'] ?></span>
+                </div>
+                <div class="form-row">
+                    <label>Penyakit yang diderita</label>
+                    <span class="dotted-line"><?= $userData['penyakit'] ?: 'Tidak ada' ?></span>
+                </div>
+                <div class="form-row">
+                    <label>Nama Orangtua</label>
+                    <span class="dotted-line"></span>
+                </div>
+                <div class="form-row">
+                    <label>Ayah</label>
+                    <span class="dotted-line"><?= $userData['nama_ayah'] ?></span>
+                </div>
+                <div class="form-row">
+                    <label>Ibu</label>
+                    <span class="dotted-line"><?= $userData['nama_ibu'] ?></span>
+                </div>
+                <div class="form-row">
+                    <label>Alamat Orangtua</label>
+                    <span class="dotted-line"><?= $userData['alamat_orangtua'] ?></span>
+                </div>
+                <div class="form-row">
+                    <label>No. Telp/HP Orangtua</label>
+                    <span class="dotted-line"><?= $userData['no_telp_orangtua'] ?></span>
+                </div>
+                <div class="form-row">
+                    <label>Pekerjaan Orangtua</label>
+                    <span class="dotted-line"><?= $userData['pekerjaan_ayah'] . ' / ' . $userData['pekerjaan_ibu'] ?></span>
                 </div>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Nama Ibu:</label>
-                    <div class="value"><?= $userData['nama_ibu'] ?? '-' ?></div>
+
+            <div class="fields-right">
+                <div class="photo-box">
+                    <?php if (!empty($userData['foto'])): ?>
+                        <img src="<?= base_url('uploads/fotos/' . $userData['foto']) ?>" alt="Foto">
+                    <?php else: ?>
+                        <span>Pas Foto</span>
+                        <span>3x4 Warna</span>
+                    <?php endif; ?>
                 </div>
-                <div class="form-group">
-                    <label>Pekerjaan Ibu:</label>
-                    <div class="value"><?= $userData['pekerjaan_ibu'] ?? '-' ?></div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Alamat Orang Tua:</label>
-                <div class="value"><?= $userData['alamat_orangtua'] ?? '-' ?></div>
-            </div>
-            <div class="form-group">
-                <label>No. Telepon Orang Tua:</label>
-                <div class="value"><?= $userData['no_telp_orangtua'] ?? '-' ?></div>
             </div>
         </div>
 
-        <!-- Foto -->
-        <?php if (!empty($userData['foto'])): ?>
-        <div class="form-section">
-            <h3>C. FOTO</h3>
-            <div class="photo-section">
-                <img src="/uploads/fotos/<?= $userData['foto'] ?>" alt="Foto Pendaftar" onerror="this.style.display='none'">
-            </div>
-        </div>
-        <?php endif; ?>
-
-        <!-- Tanda Tangan -->
-        <div class="form-section">
-            <h3>D. TANDA TANGAN</h3>
-            <div style="margin-top: 50px; text-align: center;">
-                <div style="border-bottom: 1px solid #000; width: 200px; margin: 0 auto;"></div>
-                <p style="margin-top: 5px; color: #6b7280;">Tanda Tangan Pendaftar</p>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div style="margin-top: 40px; text-align: center; color: #6b7280; font-size: 12px;">
-            <p>Dokumen ini dibuat secara otomatis pada <?= date('d/m/Y H:i') ?></p>
-            <p>MAPALA Politala - Politeknik Negeri Tanah Laut</p>
+        <div class="signature-section">
+            <p>Pelaihari, <?= date('d F Y') ?></p>
+            <p>Hormat saya,</p>
+            <br><br><br>
+            <p>(<?= $userData['nama_lengkap'] ?>)</p>
         </div>
     </div>
 </body>
+
 </html>

@@ -1,243 +1,194 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ID Card MAPALA Politala</title>
+    <title>Kartu Anggota</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+            background-color: #f0f0f0;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+        .card-container {
+            padding: 10px;
+            border: 2px solid black;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* Ukuran ini untuk meniru kartu ID standar */
+            width: 250px;
+            height: 380px;
         }
-        .download-section {
+
+        .card {
+            position: relative;
+            width: 100%;
+            height: 100%;
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #f0fdf4;
-            border: 1px solid #16a34a;
-            border-radius: 8px;
+            padding: 10px;
+            box-sizing: border-box;
+            /* Logo sebagai background */
+            background-image: url('<?= base_url('mapala.png') ?>');
+            /* Ganti dengan nama file logo Anda */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+            /* Menyamarkan logo agar teks lebih jelas */
         }
-        .download-btn {
-            display: inline-block;
-            background-color: #16a34a;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 6px;
+
+        .card-header h3,
+        .card-header h1,
+        .card-header h2 {
+            margin: 0;
             font-weight: bold;
-            transition: background-color 0.3s;
         }
-        .download-btn:hover {
-            background-color: #15803d;
+
+        .card-header h3 {
+            font-size: 14px;
         }
-        .id-card {
-            border: 3px solid #16a34a;
-            border-radius: 15px;
-            padding: 30px;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+
+        .card-header h1 {
+            font-size: 20px;
+        }
+
+        .card-header h2 {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .photo-placeholder {
+            width: 60px;
+            height: 75px;
+            border: 1px solid #000;
+            margin: 5px auto;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 8px;
+            color: #666;
             position: relative;
             overflow: hidden;
         }
-        .id-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200px;
-            height: 200px;
-            background: rgba(22, 163, 74, 0.1);
-            border-radius: 50%;
-            z-index: 1;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-            z-index: 2;
-        }
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 15px;
-            background-color: #16a34a;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .title {
-            color: #16a34a;
-            margin: 0;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .subtitle {
-            color: #374151;
-            margin: 5px 0 0 0;
-            font-size: 14px;
-        }
-        .photo-section {
-            text-align: center;
-            margin: 20px 0;
-            position: relative;
-            z-index: 2;
-        }
-        .photo {
-            width: 120px;
-            height: 150px;
-            border: 3px solid #16a34a;
-            border-radius: 10px;
+
+        .photo-placeholder img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            background-color: #f9fafb;
+            border: none;
         }
-        .info-section {
-            margin: 20px 0;
-            position: relative;
-            z-index: 2;
+
+        .card-body {
+            margin-top: 15px;
+            text-align: left;
         }
+
         .info-row {
             display: flex;
-            margin-bottom: 12px;
             align-items: center;
-        }
-        .info-label {
-            width: 120px;
             font-weight: bold;
-            color: #374151;
             font-size: 14px;
+            margin-bottom: 5px;
         }
-        .info-value {
+
+        .info-row .label {
+            width: 80px;
+        }
+
+        .info-row .colon {
+            margin-right: 5px;
+        }
+
+        .info-row .value {
             flex: 1;
-            color: #1f2937;
-            font-size: 14px;
-            padding: 5px 10px;
-            background-color: white;
+        }
+
+        .card-footer {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            font-size: 10px;
+            font-style: italic;
+            padding: 0 10px;
+        }
+
+        /* Download Button */
+        .download-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
             border-radius: 5px;
-            border: 1px solid #d1d5db;
+            font-size: 14px;
+            z-index: 1000;
         }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            position: relative;
-            z-index: 2;
+
+        .download-btn:hover {
+            background-color: #218838;
         }
-        .validity {
-            color: #6b7280;
-            font-size: 12px;
-            margin-bottom: 10px;
-        }
-        .signature {
-            border-top: 1px solid #16a34a;
-            padding-top: 10px;
-            color: #374151;
-            font-size: 12px;
-        }
+
         @media print {
-            .download-section {
+            .download-btn {
                 display: none;
             }
             body {
                 background-color: white;
             }
-            .container {
-                box-shadow: none;
-            }
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <!-- Download Section -->
-        <div class="download-section">
-            <h2 style="margin: 0 0 15px 0; color: #166534;">Download ID Card</h2>
-            <p style="margin: 0 0 20px 0; color: #15803d;">Klik tombol di bawah untuk mengunduh ID Card dalam format PDF</p>
-            <a href="/daftar/idcard/pdf" class="download-btn">
-                🆔 Download PDF ID Card
-            </a>
-        </div>
+    <!-- Download Button -->
+    <a href="/daftar/idcard/pdf" class="download-btn">Download PDF</a>
 
-        <!-- ID Card -->
-        <div class="id-card">
-            <!-- Header -->
-            <div class="header">
-                <div class="logo">M</div>
-                <h1 class="title">MAPALA POLITALA</h1>
-                <p class="subtitle">Politeknik Negeri Tanah Laut</p>
+    <div class="card-container">
+        <div class="card">
+            <div class="card-header">
+                <h3>LATIHAN DASAR XV</h3>
+                <h1>MAPALA POLITALA</h1>
+                <h2>TAHUN <?= $userData['angkatan'] ?></h2>
             </div>
-
-            <!-- Photo -->
-            <div class="photo-section">
+            <div class="photo-placeholder">
                 <?php if (!empty($userData['foto'])): ?>
-                    <img src="/uploads/fotos/<?= $userData['foto'] ?>" alt="Foto" class="photo" onerror="this.style.display='none'">
+                    <img src="<?= base_url('uploads/fotos/' . $userData['foto']) ?>" alt="Foto">
                 <?php else: ?>
-                    <div class="photo" style="display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 12px;">
-                        <div style="text-align: center;">
-                            <div style="font-size: 24px; margin-bottom: 5px;">📷</div>
-                            <div>Foto</div>
-                            <div>3x4</div>
-                        </div>
-                    </div>
+                    <span>Pas Foto</span>
+                    <span>3x4 Warna</span>
                 <?php endif; ?>
             </div>
-
-            <!-- Information -->
-            <div class="info-section">
+            <div class="card-body">
                 <div class="info-row">
-                    <div class="info-label">Nama:</div>
-                    <div class="info-value"><?= $userData['nama_lengkap'] ?? '-' ?></div>
+                    <span class="label">Nama</span>
+                    <span class="colon">:</span>
+                    <span class="value"><?= $userData['nama_lengkap'] ?></span>
                 </div>
                 <div class="info-row">
-                    <div class="info-label">Nama Panggilan:</div>
-                    <div class="info-value"><?= $userData['nama_panggilan'] ?? '-' ?></div>
+                    <span class="label">Gelar</span>
+                    <span class="colon">:</span>
+                    <span class="value"><?= $userData['program_studi'] ?></span>
                 </div>
                 <div class="info-row">
-                    <div class="info-label">Program Studi:</div>
-                    <div class="info-value"><?= $userData['program_studi'] ?? '-' ?></div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">Angkatan:</div>
-                    <div class="info-value"><?= $userData['angkatan'] ?? date('Y') ?></div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">No. Telepon:</div>
-                    <div class="info-value"><?= $userData['no_telp'] ?? '-' ?></div>
-                </div>
-                <div class="info-row">
-                    <div class="info-label">Gol. Darah:</div>
-                    <div class="info-value"><?= $userData['gol_darah'] ?? '-' ?></div>
+                    <span class="label">Angkatan</span>
+                    <span class="colon">:</span>
+                    <span class="value"><?= $userData['angkatan'] ?></span>
                 </div>
             </div>
-
-            <!-- Footer -->
-            <div class="footer">
-                <div class="validity">
-                    Berlaku sampai: <?= date('d/m/Y', strtotime('+1 year')) ?>
-                </div>
-                <div class="signature">
-                    <div style="border-bottom: 1px solid #16a34a; width: 150px; margin: 0 auto 5px;"></div>
-                    <div>Ketua MAPALA Politala</div>
-                </div>
+            <div class="card-footer">
+                <p>"Meningkatkan Jiwa Mentalisme, Totalitas Dan<br>Loyalitas Dalam Berorganisasi"</p>
             </div>
-        </div>
-
-        <!-- Additional Info -->
-        <div style="margin-top: 20px; text-align: center; color: #6b7280; font-size: 12px;">
-            <p>ID Card ini dibuat secara otomatis pada <?= date('d/m/Y H:i') ?></p>
-            <p>Status: <span style="color: #f59e0b; font-weight: bold;">PENDING VERIFIKASI</span></p>
         </div>
     </div>
 </body>
+
 </html>
