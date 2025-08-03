@@ -4,9 +4,7 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Models\SettingModel;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\TemplateProcessor;
+use App\Libraries\DocxGeneratorImproved;
 
 class Daftar extends BaseController
 {
@@ -122,9 +120,10 @@ class Daftar extends BaseController
         if ($this->userModel->insert($userData)) {
             $userId = $this->userModel->insertID();
             
-            // Generate DOCX files
-            $registrationDocxPath = $this->generateRegistrationDOCX($userData);
-            $idCardDocxPath = $this->generateIdCardDOCX($userData);
+            // Generate DOCX files menggunakan template HTML yang diperbaiki
+            $docxGenerator = new DocxGeneratorImproved();
+            $registrationDocxPath = $docxGenerator->generateFormulirPendaftaran($userData);
+            $idCardDocxPath = $docxGenerator->generateIdCard($userData);
             
             // Get WhatsApp link from settings
             $whatsappLink = $this->settingModel->getValue('whatsapp_group_link', 'https://chat.whatsapp.com/example');
@@ -159,160 +158,7 @@ class Daftar extends BaseController
         return view('daftar/success', $data);
     }
 
-    private function generateRegistrationDOCX($userData)
-    {
-        try {
-            // Path to template - using the simple template with placeholders
-            $templatePath = ROOTPATH . 'app/template_formulir_simple.docx';
-            
-            if (!file_exists($templatePath)) {
-                log_message('error', 'Template not found: ' . $templatePath);
-                return null;
-            }
-            
-            // Create template processor
-            $templateProcessor = new TemplateProcessor($templatePath);
-            
-            // Prepare data for template replacement
-            $templateData = [
-                'nama_lengkap' => $userData['nama_lengkap'],
-                'nama_panggilan' => $userData['nama_panggilan'],
-                'tempat_lahir' => $userData['tempat_lahir'],
-                'tanggal_lahir' => date('d F Y', strtotime($userData['tanggal_lahir'])),
-                'tempat_tanggal_lahir' => $userData['tempat_lahir'] . ', ' . date('d F Y', strtotime($userData['tanggal_lahir'])),
-                'jenis_kelamin' => $userData['jenis_kelamin'],
-                'alamat' => $userData['alamat'],
-                'no_telp' => $userData['no_telp'],
-                'agama' => $userData['agama'],
-                'program_studi' => $userData['program_studi'],
-                'gol_darah' => $userData['gol_darah'],
-                'penyakit' => $userData['penyakit'] ?: 'Tidak ada',
-                'nama_ayah' => $userData['nama_ayah'],
-                'nama_ibu' => $userData['nama_ibu'],
-                'alamat_orangtua' => $userData['alamat_orangtua'],
-                'no_telp_orangtua' => $userData['no_telp_orangtua'],
-                'pekerjaan_ayah' => $userData['pekerjaan_ayah'],
-                'pekerjaan_ibu' => $userData['pekerjaan_ibu'],
-                'tanggal_daftar' => date('d F Y'),
-                'angkatan' => $userData['angkatan'],
-                'status' => 'PENDING - Menunggu persetujuan admin'
-            ];
-            
-            // Replace text placeholders
-            foreach ($templateData as $placeholder => $value) {
-                $templateProcessor->setValue($placeholder, $value);
-            }
-            
-            // Handle photo if exists
-            if (!empty($userData['foto'])) {
-                $photoPath = ROOTPATH . 'public/uploads/fotos/' . $userData['foto'];
-                if (file_exists($photoPath)) {
-                    // Add photo to template (size in cm)
-                    $templateProcessor->setImageValue('foto', [
-                        'path' => $photoPath,
-                        'width' => 300, // pixels
-                        'height' => 400, // pixels
-                        'ratio' => false
-                    ]);
-                } else {
-                    // If photo not found, set placeholder text
-                    $templateProcessor->setValue('foto', 'Foto tidak tersedia');
-                }
-            } else {
-                $templateProcessor->setValue('foto', 'Foto tidak tersedia');
-            }
-            
-            // Save the generated document
-            $filename = 'formulir_pendaftaran_' . preg_replace('/[^a-zA-Z0-9]/', '_', $userData['nama_lengkap']) . '_' . date('Y-m-d_H-i-s') . '.docx';
-            $filepath = ROOTPATH . 'public/uploads/documents/' . $filename;
-            
-            // Ensure directory exists
-            if (!is_dir(dirname($filepath))) {
-                mkdir(dirname($filepath), 0755, true);
-            }
-            
-            // Save the document
-            $templateProcessor->saveAs($filepath);
-            
-            return $filename;
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Error generating registration DOCX: ' . $e->getMessage());
-            return null;
-        }
-    }
 
-    private function generateIdCardDOCX($userData)
-    {
-        try {
-            // Path to template - using the simple template with placeholders
-            $templatePath = ROOTPATH . 'app/template_id_card_simple.docx';
-            
-            if (!file_exists($templatePath)) {
-                log_message('error', 'Template not found: ' . $templatePath);
-                return null;
-            }
-            
-            // Create template processor
-            $templateProcessor = new TemplateProcessor($templatePath);
-            
-            // Prepare data for template replacement
-            $templateData = [
-                'nama_lengkap' => $userData['nama_lengkap'],
-                'nama_panggilan' => $userData['nama_panggilan'],
-                'program_studi' => $userData['program_studi'],
-                'angkatan' => $userData['angkatan'],
-                'jenis_kelamin' => $userData['jenis_kelamin'],
-                'gol_darah' => $userData['gol_darah'],
-                'no_telp' => $userData['no_telp'],
-                'status' => 'CALON ANGGOTA',
-                'tanggal_terbit' => date('d F Y'),
-                'tahun' => date('Y')
-            ];
-            
-            // Replace text placeholders
-            foreach ($templateData as $placeholder => $value) {
-                $templateProcessor->setValue($placeholder, $value);
-            }
-            
-            // Handle photo if exists
-            if (!empty($userData['foto'])) {
-                $photoPath = ROOTPATH . 'public/uploads/fotos/' . $userData['foto'];
-                if (file_exists($photoPath)) {
-                    // Add photo to template (smaller size for ID card)
-                    $templateProcessor->setImageValue('foto', [
-                        'path' => $photoPath,
-                        'width' => 200, // pixels
-                        'height' => 250, // pixels
-                        'ratio' => false
-                    ]);
-                } else {
-                    // If photo not found, set placeholder text
-                    $templateProcessor->setValue('foto', 'Foto tidak tersedia');
-                }
-            } else {
-                $templateProcessor->setValue('foto', 'Foto tidak tersedia');
-            }
-            
-            // Save the generated document
-            $filename = 'id_card_' . preg_replace('/[^a-zA-Z0-9]/', '_', $userData['nama_lengkap']) . '_' . date('Y-m-d_H-i-s') . '.docx';
-            $filepath = ROOTPATH . 'public/uploads/documents/' . $filename;
-            
-            // Ensure directory exists
-            if (!is_dir(dirname($filepath))) {
-                mkdir(dirname($filepath), 0755, true);
-            }
-            
-            // Save the document
-            $templateProcessor->saveAs($filepath);
-            
-            return $filename;
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Error generating ID Card DOCX: ' . $e->getMessage());
-            return null;
-        }
-    }
 
     public function downloadDocument($type, $filename)
     {
