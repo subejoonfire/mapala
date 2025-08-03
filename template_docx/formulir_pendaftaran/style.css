@@ -1,0 +1,147 @@
+body {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+.container {
+    background-color: white;
+    padding: 30px;
+    border: 1px solid #ccc;
+    position: relative;
+    width: 700px;
+    /* A4 width on 96dpi screen */
+    height: 1000px;
+    /* A4 height on 96dpi screen */
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background-image: url('logo_kanan.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.1;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Header Section */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+
+.logo-left img,
+.logo-right img {
+    width: 80px;
+    height: auto;
+}
+
+.title-section {
+    text-align: center;
+    flex-grow: 1;
+}
+
+.title-section h1 {
+    font-size: 14px;
+    margin: 0;
+}
+
+.title-section h2 {
+    font-size: 12px;
+    margin: 5px 0 0;
+    font-weight: normal;
+}
+
+/* Main Form Content */
+.form-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.fields-left {
+    flex: 1;
+    width: 60%;
+}
+
+.fields-right {
+    width: 40%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.form-row {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 10px;
+}
+
+.form-row label {
+    width: 150px;
+    white-space: nowrap;
+    padding-right: 5px;
+}
+
+.dotted-line {
+    flex-grow: 1;
+    border-bottom: 1px dotted #000;
+}
+
+.photo-box {
+    width: 120px;
+    height: 160px;
+    border: 1px solid #000;
+    text-align: center;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+}
+
+/* Signature Section */
+.signature-section {
+    margin-top: 40px;
+    text-align: right;
+    position: relative;
+    z-index: 2;
+}
+
+.signature-section p {
+    margin: 5px 0;
+}
+
+/* Aturan untuk cetak PDF */
+@media print {
+    body {
+        background-color: white;
+    }
+
+    .container {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        /* Mengatur ukuran kertas A4 secara presisi */
+        width: 210mm;
+        min-height: 297mm;
+    }
+}
