@@ -4,7 +4,6 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Models\SettingModel;
-use App\Libraries\DocxGeneratorImproved;
 
 class Daftar extends BaseController
 {
@@ -120,25 +119,18 @@ class Daftar extends BaseController
         if ($this->userModel->insert($userData)) {
             $userId = $this->userModel->insertID();
             
-            // Generate DOCX files menggunakan template HTML yang diperbaiki
-            $docxGenerator = new DocxGeneratorImproved();
-            $registrationDocxPath = $docxGenerator->generateFormulirPendaftaran($userData);
-            $idCardDocxPath = $docxGenerator->generateIdCard($userData);
-            
             // Get WhatsApp link from settings
             $whatsappLink = $this->settingModel->getValue('whatsapp_group_link', 'https://chat.whatsapp.com/example');
             $whatsappName = $this->settingModel->getValue('whatsapp_group_name', 'MAPALA Politala Official');
             
-            // Store DOCX paths in session for download
+            // Store user data in session
             session()->set([
-                'registration_docx' => $registrationDocxPath,
-                'id_card_docx' => $idCardDocxPath,
                 'whatsapp_link' => $whatsappLink,
                 'whatsapp_name' => $whatsappName,
                 'user_data' => $userData
             ]);
             
-            return redirect()->to('/daftar/success')->with('success', 'Pendaftaran berhasil! Silakan download dokumen Anda.');
+            return redirect()->to('/daftar/success')->with('success', 'Pendaftaran berhasil!');
         } else {
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar');
         }
@@ -148,8 +140,6 @@ class Daftar extends BaseController
     {
         $data = [
             'title' => 'Pendaftaran Berhasil - MAPALA Politala',
-            'registration_docx' => session()->get('registration_docx'),
-            'id_card_docx' => session()->get('id_card_docx'),
             'whatsapp_link' => session()->get('whatsapp_link'),
             'whatsapp_name' => session()->get('whatsapp_name'),
             'user_data' => session()->get('user_data')
@@ -157,17 +147,28 @@ class Daftar extends BaseController
 
         return view('daftar/success', $data);
     }
-
-
-
-    public function downloadDocument($type, $filename)
+    
+    public function formulir()
     {
-        $filepath = ROOTPATH . 'public/uploads/documents/' . $filename;
-        
-        if (!file_exists($filepath)) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('File not found');
+        $userData = session()->get('user_data');
+        if (!$userData) {
+            return redirect()->to('/daftar')->with('error', 'Data tidak ditemukan');
         }
         
-        return $this->response->download($filepath, null);
+        return view('templates/formulir_pendaftaran', ['userData' => $userData]);
     }
+    
+    public function idcard()
+    {
+        $userData = session()->get('user_data');
+        if (!$userData) {
+            return redirect()->to('/daftar')->with('error', 'Data tidak ditemukan');
+        }
+        
+        return view('templates/id_card', ['userData' => $userData]);
+    }
+
+
+
+
 }
