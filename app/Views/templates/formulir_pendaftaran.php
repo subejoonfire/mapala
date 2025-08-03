@@ -159,10 +159,17 @@
             border-radius: 5px;
             font-size: 14px;
             z-index: 1000;
+            cursor: pointer;
+            border: none;
         }
 
         .download-btn:hover {
             background-color: #0056b3;
+        }
+
+        .download-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
         }
 
         /* Aturan untuk cetak PDF */
@@ -191,7 +198,7 @@
         <div class="watermark"></div>
 
         <!-- Download Button -->
-        <a href="/daftar/formulir/pdf" class="download-btn">Download PDF</a>
+        <button onclick="downloadPDF()" class="download-btn" id="downloadBtn">Download PDF</button>
 
         <div class="header">
             <div class="logo-left">
@@ -293,6 +300,33 @@
             <p>(<?= $userData['nama_lengkap'] ?>)</p>
         </div>
     </div>
+
+    <script>
+        function downloadPDF() {
+            const btn = document.getElementById('downloadBtn');
+            const originalText = btn.textContent;
+            
+            // Disable button dan ubah text
+            btn.disabled = true;
+            btn.textContent = 'Downloading...';
+            
+            // Buat link download
+            const link = document.createElement('a');
+            link.href = '/daftar/formulir/pdf';
+            link.download = 'Formulir_Pendaftaran_<?= $userData['nama_lengkap'] ?>.pdf';
+            
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Reset button setelah 2 detik
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }, 2000);
+        }
+    </script>
 </body>
 
 </html>

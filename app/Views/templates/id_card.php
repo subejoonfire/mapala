@@ -131,10 +131,17 @@
             border-radius: 5px;
             font-size: 14px;
             z-index: 1000;
+            cursor: pointer;
+            border: none;
         }
 
         .download-btn:hover {
             background-color: #218838;
+        }
+
+        .download-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
         }
 
         @media print {
@@ -150,7 +157,7 @@
 
 <body>
     <!-- Download Button -->
-    <a href="/daftar/idcard/pdf" class="download-btn">Download PDF</a>
+    <button onclick="downloadPDF()" class="download-btn" id="downloadBtn">Download PDF</button>
 
     <div class="card-container">
         <div class="card">
@@ -189,6 +196,33 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function downloadPDF() {
+            const btn = document.getElementById('downloadBtn');
+            const originalText = btn.textContent;
+            
+            // Disable button dan ubah text
+            btn.disabled = true;
+            btn.textContent = 'Downloading...';
+            
+            // Buat link download
+            const link = document.createElement('a');
+            link.href = '/daftar/idcard/pdf';
+            link.download = 'ID_Card_<?= $userData['nama_lengkap'] ?>.pdf';
+            
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Reset button setelah 2 detik
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }, 2000);
+        }
+    </script>
 </body>
 
 </html>
