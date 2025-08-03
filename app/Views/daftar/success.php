@@ -33,10 +33,16 @@
                                     <p class="text-xs text-blue-700">Dokumen pendaftaran Anda yang sudah terisi</p>
                                 </div>
                             </div>
-                            <a href="/daftar/formulir" target="_blank"
-                               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                                Lihat
-                            </a>
+                            <div class="flex space-x-2">
+                                <a href="/daftar/formulir" target="_blank"
+                                   class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                    Lihat
+                                </a>
+                                <a href="/daftar/formulir/pdf" 
+                                   class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                    Download PDF
+                                </a>
+                            </div>
                         </div>
                     </div>
                     
@@ -52,10 +58,16 @@
                                     <p class="text-xs text-green-700">Kartu identitas sementara yang sudah terisi</p>
                                 </div>
                             </div>
-                            <a href="/daftar/idcard" target="_blank"
-                               class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                                Lihat
-                            </a>
+                            <div class="flex space-x-2">
+                                <a href="/daftar/idcard" target="_blank"
+                                   class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                    Lihat
+                                </a>
+                                <a href="/daftar/idcard/pdf"
+                                   class="bg-green-800 hover:bg-green-900 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                    Download PDF
+                                </a>
+                            </div>
                         </div>
                     </div>
                     
@@ -83,7 +95,7 @@
                 <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
                     <h4 class="text-sm font-medium text-blue-800 mb-2">Langkah Selanjutnya:</h4>
                     <ul class="text-sm text-blue-700 space-y-1">
-                        <li>• Lihat dokumen pendaftaran dan ID Card Anda</li>
+                        <li>• Lihat dokumen pendaftaran dan ID Card Anda (bisa download PDF)</li>
                         <li>• Admin akan memverifikasi data Anda dalam 1-2 hari kerja</li>
                         <li>• Setelah disetujui, status Anda akan berubah menjadi "Approved"</li>
                         <li>• Ikuti kegiatan orientasi yang akan dijadwalkan</li>

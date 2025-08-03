@@ -36,6 +36,8 @@ $routes->post('/daftar', 'Daftar::store');
 $routes->get('/daftar/success', 'Daftar::success');
 $routes->get('/daftar/formulir', 'Daftar::formulir');
 $routes->get('/daftar/idcard', 'Daftar::idcard');
+$routes->get('/daftar/formulir/pdf', 'Daftar::formulirPdf');
+$routes->get('/daftar/idcard/pdf', 'Daftar::idcardPdf');
 
 // Auth Routes (Admin Only)
 $routes->get('/login', 'Auth::login');

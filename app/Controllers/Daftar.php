@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Models\SettingModel;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class Daftar extends BaseController
 {
@@ -166,6 +168,58 @@ class Daftar extends BaseController
         }
         
         return view('templates/id_card', ['userData' => $userData]);
+    }
+
+    public function formulirPdf()
+    {
+        $userData = session()->get('user_data');
+        if (!$userData) {
+            return redirect()->to('/daftar')->with('error', 'Data tidak ditemukan');
+        }
+
+        // Generate HTML content
+        $html = view('templates/formulir_pendaftaran', ['userData' => $userData]);
+        
+        // Setup dompdf
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        
+        // Output PDF
+        $fileName = 'Formulir_Pendaftaran_' . $userData['nama_lengkap'] . '.pdf';
+        $dompdf->stream($fileName, ["Attachment" => true]);
+    }
+
+    public function idcardPdf()
+    {
+        $userData = session()->get('user_data');
+        if (!$userData) {
+            return redirect()->to('/daftar')->with('error', 'Data tidak ditemukan');
+        }
+
+        // Generate HTML content
+        $html = view('templates/id_card', ['userData' => $userData]);
+        
+        // Setup dompdf
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+        
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        
+        // Output PDF
+        $fileName = 'ID_Card_' . $userData['nama_lengkap'] . '.pdf';
+        $dompdf->stream($fileName, ["Attachment" => true]);
     }
 
 

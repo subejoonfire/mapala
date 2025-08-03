@@ -114,22 +114,25 @@
         }
 
         .photo-box {
-            width: 120px;
-            height: 160px;
             border: 1px solid #000;
-            text-align: center;
-            padding: 10px;
+            width: 120px;
+            height: 150px;
+            position: relative;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            text-align: center;
             font-size: 10px;
+            color: #666;
+            background-color: #f9f9f9;
         }
 
         .photo-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border: none;
         }
 
         /* Signature Section */
@@ -250,7 +253,7 @@
             <div class="fields-right">
                 <div class="photo-box">
                     <?php if (!empty($userData['foto'])): ?>
-                        <img src="<?= base_url('public/uploads/fotos/' . $userData['foto']) ?>" alt="Foto">
+                        <img src="<?= base_url('uploads/fotos/' . $userData['foto']) ?>" alt="Foto">
                     <?php else: ?>
                         <span>Pas Foto</span>
                         <span>3x4 Warna</span>

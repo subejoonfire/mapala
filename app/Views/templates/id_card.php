@@ -63,14 +63,17 @@
         }
 
         .photo-placeholder {
-            width: 120px;
-            height: 150px;
-            border: 2px solid black;
-            background-color: white;
-            margin: 10px auto;
+            width: 60px;
+            height: 75px;
+            border: 1px solid #000;
+            margin: 5px auto;
+            background-color: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-size: 8px;
+            color: #666;
+            position: relative;
             overflow: hidden;
         }
 
@@ -78,6 +81,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border: none;
         }
 
         .card-body {
@@ -127,7 +131,7 @@
             </div>
             <div class="photo-placeholder">
                 <?php if (!empty($userData['foto'])): ?>
-                    <img src="<?= base_url('public/uploads/fotos/' . $userData['foto']) ?>" alt="Foto">
+                    <img src="<?= base_url('uploads/fotos/' . $userData['foto']) ?>" alt="Foto">
                 <?php endif; ?>
             </div>
             <div class="card-body">
