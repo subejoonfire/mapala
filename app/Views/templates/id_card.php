@@ -33,7 +33,7 @@
             padding: 10px;
             box-sizing: border-box;
             /* Logo sebagai background */
-            background-image: url('<?= base_url('template_docx/id_card/logo_kanan.png') ?>');
+            background-image: url('<?= base_url('mapala.png') ?>');
             /* Ganti dengan nama file logo Anda */
             background-size: cover;
             background-position: center;

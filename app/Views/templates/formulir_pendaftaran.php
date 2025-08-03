@@ -34,7 +34,7 @@
             transform: translate(-50%, -50%);
             width: 80%;
             height: 80%;
-            background-image: url('<?= base_url('template_docx/formulir_pendaftaran/logo_kanan.png') ?>');
+            background-image: url('<?= base_url('mapala.png') ?>');
             background-repeat: no-repeat;
             background-position: center;
             background-size: contain;
@@ -171,14 +171,14 @@
 
         <div class="header">
             <div class="logo-left">
-                <img src="<?= base_url('template_docx/formulir_pendaftaran/logo_kiri.png') ?>" alt="Logo Politala">
+                <img src="<?= base_url('politala.png') ?>" alt="Logo Politala">
             </div>
             <div class="title-section">
                 <h1>FORMULIR PENDAFTARAN CALON ANGGOTA BARU</h1>
                 <h2>MAPALA POLITALA TAHUN <?= $userData['angkatan'] ?></h2>
             </div>
             <div class="logo-right">
-                <img src="<?= base_url('template_docx/formulir_pendaftaran/logo_kanan.png') ?>" alt="Logo Mapala">
+                <img src="<?= base_url('mapala.png') ?>" alt="Logo Mapala">
             </div>
         </div>
 
