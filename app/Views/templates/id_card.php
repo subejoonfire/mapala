@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kartu Anggota</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -157,9 +158,9 @@
 
 <body>
     <!-- Download Button -->
-    <button onclick="downloadPDF()" class="download-btn" id="downloadBtn">Download PDF</button>
+    <button onclick="generatePDF()" class="download-btn" id="downloadBtn">Download PDF</button>
 
-    <div class="card-container">
+    <div class="card-container" id="idcard">
         <div class="card">
             <div class="card-header">
                 <h3>LATIHAN DASAR XV</h3>
@@ -198,29 +199,46 @@
     </div>
 
     <script>
-        function downloadPDF() {
+        function generatePDF() {
             const btn = document.getElementById('downloadBtn');
             const originalText = btn.textContent;
             
             // Disable button dan ubah text
             btn.disabled = true;
-            btn.textContent = 'Downloading...';
+            btn.textContent = 'Generating PDF...';
             
-            // Buat link download
-            const link = document.createElement('a');
-            link.href = '/daftar/idcard/pdf';
-            link.download = 'ID_Card_<?= $userData['nama_lengkap'] ?>.pdf';
+            // Sembunyikan tombol download saat generate PDF
+            btn.style.display = 'none';
             
-            // Trigger download
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Konfigurasi html2pdf
+            const opt = {
+                margin: 0,
+                filename: 'ID_Card_<?= $userData['nama_lengkap'] ?>.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait' 
+                }
+            };
             
-            // Reset button setelah 2 detik
-            setTimeout(() => {
+            // Generate PDF
+            html2pdf().set(opt).from(document.getElementById('idcard')).save().then(() => {
+                // Tampilkan kembali tombol dan reset
+                btn.style.display = 'block';
                 btn.disabled = false;
                 btn.textContent = originalText;
-            }, 2000);
+            }).catch(err => {
+                console.error('Error generating PDF:', err);
+                btn.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = originalText;
+            });
         }
     </script>
 </body>
