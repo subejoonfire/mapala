@@ -38,10 +38,6 @@
                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                                     Lihat
                                 </a>
-                                <a href="/daftar/formulir/pdf" 
-                                   class="bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                    Download PDF
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -62,10 +58,6 @@
                                 <a href="/daftar/idcard" target="_blank"
                                    class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
                                     Lihat
-                                </a>
-                                <a href="/daftar/idcard/pdf"
-                                   class="bg-green-800 hover:bg-green-900 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
-                                    Download PDF
                                 </a>
                             </div>
                         </div>
